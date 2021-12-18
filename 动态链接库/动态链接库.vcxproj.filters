@@ -165,6 +165,33 @@
     <ClInclude Include="pugixml.hpp">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="Win32异常.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Tiff异常.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Tiff异常类型.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="XML模板.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="模块句柄.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="结果分类.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="尝试结果.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="XML解析结果.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -251,19 +278,26 @@
     <ClCompile Include="OmeTiffReader.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="Win32异常.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Tiff异常.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="cpp.hint" />
   </ItemGroup>
   <ItemGroup>
-    <Xml Include="OME图像描述模板.xml">
-      <Filter>资源文件</Filter>
-    </Xml>
-    <Xml Include="TiffData模板.xml">
-      <Filter>资源文件</Filter>
-    </Xml>
     <Xml Include="头文件依赖树.xml">
       <Filter>代码管理辅助</Filter>
     </Xml>
+    <Xml Include="XML模板.xml" />
+    <Xml Include="TiffData模板.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="动态链接库.rc">
+      <Filter>资源文件</Filter>
+    </ResourceCompile>
   </ItemGroup>
 </Project>

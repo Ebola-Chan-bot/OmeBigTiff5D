@@ -180,6 +180,8 @@
     <ClInclude Include="IOmeBigTiff5D.h" />
     <ClInclude Include="IOmeTiffReader.h" />
     <ClInclude Include="I使用内存映射文件.h" />
+    <ClInclude Include="XML解析结果.h" />
+    <ClInclude Include="尝试结果.h" />
     <ClInclude Include="pugiconfig.hpp" />
     <ClInclude Include="pugixml.hpp" />
     <ClInclude Include="ReaderBase.h" />
@@ -188,11 +190,15 @@
     <ClInclude Include="OmeSmallTiffReader.h" />
     <ClInclude Include="PhotometricInterpretation.h" />
     <ClInclude Include="ResolutionUnit.h" />
+    <ClInclude Include="resource.h" />
     <ClInclude Include="SmallTiffReader.h" />
     <ClInclude Include="SmallTiff文件头.h" />
+    <ClInclude Include="Tiff异常.h" />
+    <ClInclude Include="Tiff异常类型.h" />
     <ClInclude Include="XML内存分配.h" />
     <ClInclude Include="XML内存释放.h" />
     <ClInclude Include="XML文本接收器.h" />
+    <ClInclude Include="XML模板.h" />
     <ClInclude Include="下标转索引.h" />
     <ClInclude Include="像素类型个数.h" />
     <ClInclude Include="像素类型字符串.h" />
@@ -209,7 +215,10 @@
     <ClInclude Include="OmeTiffReader.h" />
     <ClInclude Include="Tiff文件头.h" />
     <ClInclude Include="Rational.h" />
+    <ClInclude Include="Win32异常.h" />
     <ClInclude Include="是否间断.h" />
+    <ClInclude Include="模块句柄.h" />
+    <ClInclude Include="结果分类.h" />
     <ClInclude Include="维度顺序个数.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="SRational.h" />
@@ -242,6 +251,8 @@
     <ClCompile Include="N维切片.cpp" />
     <ClCompile Include="N维切片参数.cpp" />
     <ClCompile Include="SmallTiff文件头.cpp" />
+    <ClCompile Include="Tiff异常.cpp" />
+    <ClCompile Include="Win32异常.cpp" />
     <ClCompile Include="XML内存分配.cpp" />
     <ClCompile Include="XML内存释放.cpp" />
     <ClCompile Include="XML文本接收器.cpp" />
@@ -262,13 +273,12 @@
     <None Include="cpp.hint" />
   </ItemGroup>
   <ItemGroup>
-    <Xml Include="OME图像描述模板.xml">
-      <DeploymentContent>true</DeploymentContent>
-    </Xml>
-    <Xml Include="TiffData模板.xml">
-      <DeploymentContent>true</DeploymentContent>
-    </Xml>
+    <Xml Include="TiffData模板.xml" />
+    <Xml Include="XML模板.xml" />
     <Xml Include="头文件依赖树.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="动态链接库.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />

@@ -9,4 +9,5 @@ protected:
 	void 缓存到(UINT32 IFD)override;
 public:
 	void 加载文件(HANDLE 文件句柄)override;
+	void 尝试加载(HANDLE 文件句柄)override;
 };

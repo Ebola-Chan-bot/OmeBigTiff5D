@@ -20,6 +20,7 @@ protected:
 	virtual const BYTE* const* GetIFD像素指针()const = 0;
 public:
 	virtual void 加载文件(HANDLE 文件句柄);
+	virtual void 尝试加载(HANDLE 文件句柄);
 };
 extern template BYTE* ReaderBase::读像素指针(IFD偏移<UINT16, UINT32>& 当前IFD偏移);
 extern template BYTE* ReaderBase::读像素指针(IFD偏移<UINT64, UINT64>& 当前IFD偏移);
