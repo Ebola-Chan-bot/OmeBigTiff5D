@@ -24,7 +24,6 @@ public:
 	/*
 	5D读取函数。给定要读取的目标位置，其每个维度的索引及尺寸。如果要顺序读取某个维度的全部位置，可将该维度索引指针设为nullptr。此时对应的索引Size会被忽略，任何值均不影响结果。
 	调用方应当负责为BytesOut分配足够的内存，本函数只负责写入该内存。
-	需要缓存，因此不是常量
 	*/
 	virtual void 读入像素5D(UINT16 XSize, UINT16 YSize, UINT8 CSize, UINT8 ZSize, UINT16 TSize, UINT64* XRange, UINT64* YRange, UINT64* CRange, UINT64* ZRange, UINT64* TRange, BYTE* BytesOut)noexcept = 0;
 	//直接返回指定位置像素存储位置的内部指针，只读

@@ -10,11 +10,6 @@ T Get标量(Array& 输入数组)
 	return TypedArray<T>(std::move(输入数组))[0];
 }
 template <typename T>
-T* Get对象指针(Array& 输入数组)
-{
-	return (T*)Get标量<UINT64>(输入数组);
-}
-template <typename T>
 T Get数值(Array& 输入数组)
 {
 	switch (输入数组.type)
@@ -34,6 +29,11 @@ return Get标量<Type>(输入数组);
 	case ArrayType::DOUBLE:
 		return Get标量<double>(输入数组);
 	}
+}
+template <typename T>
+T* Get对象指针(Array& 输入数组)
+{
+	return (T*)Get标量<UINT64>(输入数组);
 }
 String GetString(Array& 输入数组)
 {
@@ -77,9 +77,22 @@ TypedArray<T> 读入像素5D(IOmeTiffReader* 对象指针, UINT16 XSize, UINT16 
 {
 	buffer_ptr_t<T> 缓冲区 = 数组工厂.createBuffer<T>(UINT64(XSize) * YSize * CSize * ZSize * TSize);
 	对象指针->读入像素5D(位置5D, (BYTE*)缓冲区.get());
-	return std::move(数组工厂.createArrayFromBuffer({ XSize,YSize,CSize,ZSize,TSize }, std::move(缓冲区), MemoryLayout::ROW_MAJOR));
+	switch (对象指针->DimensionOrder())
+	{
+	case 维度顺序::XYCZT:
+		return std::move(数组工厂.createArrayFromBuffer({ XSize,YSize,CSize,ZSize,TSize }, std::move(缓冲区)));
+	case 维度顺序::XYCTZ:
+		return std::move(数组工厂.createArrayFromBuffer({ XSize,YSize,CSize,TSize,ZSize }, std::move(缓冲区)));
+	case 维度顺序::XYZCT:
+		return std::move(数组工厂.createArrayFromBuffer({ XSize,YSize,ZSize,CSize,TSize }, std::move(缓冲区)));
+	case 维度顺序::XYZTC:
+		return std::move(数组工厂.createArrayFromBuffer({ XSize,YSize,ZSize,TSize,CSize }, std::move(缓冲区)));
+	case 维度顺序::XYTCZ:
+		return std::move(数组工厂.createArrayFromBuffer({ XSize,YSize,TSize,CSize,ZSize }, std::move(缓冲区)));
+	case 维度顺序::XYTZC:
+		return std::move(数组工厂.createArrayFromBuffer({ XSize,YSize,TSize,ZSize,CSize }, std::move(缓冲区)));
+	}
 }
-
 Array 处理结果(const 尝试结果& 结果, ITiffReader* 对象指针)
 {
 	if (结果.结果 == 结果分类::成功)
@@ -138,19 +151,19 @@ API声明(DestroyOmeTiffReader)
 {
 	销毁OmeTiffReader(Get对象指针<IOmeTiffReader>(inputs[1]));
 }
-#define Create5D声明(函数名) Array 函数名(ArgumentList& inputs)
+#define Create5D声明(函数名) void 函数名(ArgumentList& outputs,ArgumentList& inputs)
 Create5D声明(打开现存)
 {
 	IOmeBigTiff5D* const 对象指针 = 创建OmeBigTiff5D();
 	const String 文件路径 = GetString(inputs[2]);
 	对象指针->打开现存(LPCWSTR(文件路径.c_str()));
-	return 数组工厂.createScalar(UINT64(对象指针));
+	outputs[0]=数组工厂.createScalar(UINT64(对象指针));
 }
 Create5D声明(尝试打开)
 {
 	IOmeBigTiff5D* const 对象指针 = 创建OmeBigTiff5D();
 	const String 文件路径 = GetString(inputs[2]);
-	return 处理结果(对象指针->尝试打开(LPCWSTR(文件路径.c_str())), 对象指针);
+	outputs[0]= 处理结果(对象指针->尝试打开(LPCWSTR(文件路径.c_str())), 对象指针);
 }
 Create5D声明(打开或创建)
 {
@@ -159,12 +172,12 @@ Create5D声明(打开或创建)
 	if (inputs.size() < 5)
 	{
 		char* 图像描述 = GetUtf8(inputs[3]);
-		对象指针->打开或创建(LPCWSTR(文件路径.c_str()), 图像描述);
+		outputs[1] = 数组工厂.createScalar(对象指针->打开或创建(LPCWSTR(文件路径.c_str()), 图像描述));
 		free(图像描述);
 	}
 	else
-		对象指针->打开或创建(LPCWSTR(文件路径.c_str()), Get数值<UINT16>(inputs[3]), Get数值<UINT16>(inputs[4]), Get数值<UINT8>(inputs[5]), Get数值<UINT8>(inputs[6]), Get数值<UINT16>(inputs[7]), 维度顺序(Get数值<UINT8>(inputs[8])), 像素类型(Get数值<UINT8>(inputs[9])));
-	return 数组工厂.createScalar(UINT64(对象指针));
+		outputs[1] = 数组工厂.createScalar(对象指针->打开或创建(LPCWSTR(文件路径.c_str()), Get数值<UINT16>(inputs[3]), Get数值<UINT16>(inputs[4]), Get数值<UINT8>(inputs[5]), Get数值<UINT8>(inputs[6]), Get数值<UINT16>(inputs[7]), 维度顺序(Get数值<UINT8>(inputs[8])), 像素类型(Get数值<UINT8>(inputs[9]))));
+	outputs[0]= 数组工厂.createScalar(UINT64(对象指针));
 }
 Create5D声明(覆盖创建)
 {
@@ -178,12 +191,12 @@ Create5D声明(覆盖创建)
 	}
 	else
 		对象指针->覆盖创建(LPCWSTR(文件路径.c_str()), Get数值<UINT16>(inputs[3]), Get数值<UINT16>(inputs[4]), Get数值<UINT8>(inputs[5]), Get数值<UINT8>(inputs[6]), Get数值<UINT16>(inputs[7]), 维度顺序(Get数值<UINT8>(inputs[8])), 像素类型(Get数值<UINT8>(inputs[9])));
-	return 数组工厂.createScalar(UINT64(对象指针));
+	outputs[0]= 数组工厂.createScalar(UINT64(对象指针));
 }
 API声明(CreateOmeBigTiff5D)
 {
-	constexpr Array(*(Create5D方法[]))(ArgumentList&) = { 打开现存,尝试打开,打开或创建,覆盖创建 };
-	outputs[0] = Create5D方法[Get数值<UINT8>(inputs[1])](inputs);
+	constexpr void(*(Create5D方法[]))(ArgumentList&,ArgumentList&) = { 打开现存,尝试打开,打开或创建,覆盖创建 };
+	Create5D方法[Get数值<UINT8>(inputs[1])](outputs,inputs);
 }
 API声明(DestroyOmeBigTiff5D)
 {
@@ -278,7 +291,7 @@ API声明(SetImageDescription)
 #define 维度SBR(参数,位数,维度) 数组 = std::move(inputs[参数]);\
 UINT##位数 维度##Size = 数组.getNumberOfElements();\
 buffer_ptr_t<UINT64> 维度##Buffer = 数组.release();\
-UINT64* const 维度##Range = 维度##Buffer.get();
+UINT64* const 维度##Range = 维度##Size?维度##Buffer.get():nullptr;
 #define Size默认值(维度) if (!维度##Range)\
 维度##Size = 对象指针->Size##维度();
 API声明(ReadPixels3D)
@@ -288,31 +301,35 @@ API声明(ReadPixels3D)
 	维度SBR(3, 16, Y);
 	维度SBR(4, 32, I);
 	if (inputs.size() > 5)
-		对象指针->读入像素3D(位置3D, Get对象指针<BYTE>(inputs[5]));
-	else
 	{
-		//只要保证Range是nullptr，Size就会被忽略
-		Size默认值(X);
-		Size默认值(Y);
-		Size默认值(I);
-		switch (对象指针->PixelType())
+		BYTE* const 目标指针 = Get对象指针<BYTE>(inputs[5]);
+		if (目标指针)
 		{
-		case 像素类型::DOUBLE:
-			outputs[0] = 读入像素3D<double>(对象指针, 位置3D);
-			break;
-		case 像素类型::FLOAT:
-			outputs[0] = 读入像素3D<float>(对象指针, 位置3D);
-			break;
+			对象指针->读入像素3D(位置3D, 目标指针);
+			return;
+		}
+	}
+	//只要保证Range是nullptr，Size就会被忽略
+	Size默认值(X);
+	Size默认值(Y);
+	Size默认值(I);
+	switch (对象指针->PixelType())
+	{
+	case 像素类型::DOUBLE:
+		outputs[0] = 读入像素3D<double>(对象指针, 位置3D);
+		break;
+	case 像素类型::FLOAT:
+		outputs[0] = 读入像素3D<float>(对象指针, 位置3D);
+		break;
 #define 读入Type3D(Type) case 像素类型::Type:\
 			outputs[0] = 读入像素3D<Type>(对象指针, 位置3D);\
 			break;
-			读入Type3D(UINT8);
-			读入Type3D(UINT16);
-			读入Type3D(UINT32);
-			读入Type3D(INT8);
-			读入Type3D(INT16);
-			读入Type3D(INT32);
-		}
+		读入Type3D(UINT8);
+		读入Type3D(UINT16);
+		读入Type3D(UINT32);
+		读入Type3D(INT8);
+		读入Type3D(INT16);
+		读入Type3D(INT32);
 	}
 }
 API声明(ReadPixels5D)
@@ -324,33 +341,37 @@ API声明(ReadPixels5D)
 	维度SBR(5, 8, Z);
 	维度SBR(6, 16, T);
 	if (inputs.size() > 7)
-		对象指针->读入像素5D(位置5D, Get对象指针<BYTE>(inputs[5]));
-	else
 	{
-		//只要保证Range是nullptr，Size就会被忽略
-		Size默认值(X);
-		Size默认值(Y);
-		Size默认值(C);
-		Size默认值(Z);
-		Size默认值(T);
-		switch (对象指针->PixelType())
+		BYTE* const 目标指针 = Get对象指针<BYTE>(inputs[7]);
+		if (目标指针)
 		{
-		case 像素类型::DOUBLE:
-			outputs[0] = 读入像素5D<double>(对象指针, 位置5D);
-			break;
-		case 像素类型::FLOAT:
-			outputs[0] = 读入像素5D<float>(对象指针, 位置5D);
-			break;
+			对象指针->读入像素5D(位置5D, 目标指针);
+			return;
+		}
+	}
+	//只要保证Range是nullptr，Size就会被忽略
+	Size默认值(X);
+	Size默认值(Y);
+	Size默认值(C);
+	Size默认值(Z);
+	Size默认值(T);
+	switch (对象指针->PixelType())
+	{
+	case 像素类型::DOUBLE:
+		outputs[0] = 读入像素5D<double>(对象指针, 位置5D);
+		break;
+	case 像素类型::FLOAT:
+		outputs[0] = 读入像素5D<float>(对象指针, 位置5D);
+		break;
 #define 读入Type5D(Type) case 像素类型::Type:\
 			outputs[0] = 读入像素5D<Type>(对象指针, 位置5D);\
 			break;
-			读入Type5D(UINT8);
-			读入Type5D(UINT16);
-			读入Type5D(UINT32);
-			读入Type5D(INT8);
-			读入Type5D(INT16);
-			读入Type5D(INT32);
-		}
+		读入Type5D(UINT8);
+		读入Type5D(UINT16);
+		读入Type5D(UINT32);
+		读入Type5D(INT8);
+		读入Type5D(INT16);
+		读入Type5D(INT32);
 	}
 }
 API声明(WritePixels5D)
@@ -393,11 +414,11 @@ API声明(WritePixels5D)
 }
 API声明(PixelPointer3D)
 {
-	outputs[0] = 数组工厂.createScalar(UINT64(Get对象指针<ITiffReader>(inputs[1])->内部像素指针3D(Get标量<UINT16>(inputs[2]), Get标量<UINT16>(inputs[3]), Get标量<UINT32>(inputs[4]))));
+	outputs[0] = 数组工厂.createScalar(UINT64(Get对象指针<ITiffReader>(inputs[1])->内部像素指针3D(Get数值<UINT16>(inputs[2]), Get数值<UINT16>(inputs[3]), Get数值<UINT32>(inputs[4]))));
 }
 API声明(PixelPointer5D)
 {
-	outputs[0] = 数组工厂.createScalar(UINT64(Get对象指针<IOmeTiffReader>(inputs[1])->内部像素指针5D(Get标量<UINT16>(inputs[2]), Get标量<UINT16>(inputs[3]), Get标量<UINT8>(inputs[4]), Get标量<UINT8>(inputs[5]), Get标量<UINT16>(inputs[6]))));
+	outputs[0] = 数组工厂.createScalar(UINT64(Get对象指针<IOmeTiffReader>(inputs[1])->内部像素指针5D(Get数值<UINT16>(inputs[2]), Get数值<UINT16>(inputs[3]), Get数值<UINT8>(inputs[4]), Get数值<UINT8>(inputs[5]), Get数值<UINT16>(inputs[6]))));
 }
 void MexFunction::operator()(matlab::mex::ArgumentList outputs, matlab::mex::ArgumentList inputs)
 {
