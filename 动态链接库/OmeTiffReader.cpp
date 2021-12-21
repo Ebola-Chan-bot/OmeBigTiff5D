@@ -146,7 +146,7 @@ UINT8 OmeTiffReader::BytesPerSample()const noexcept
 {
 	return iDimensionOrder;
 }
-颜色 OmeTiffReader::ChannelColor(UINT8 C)const noexcept
+颜色 OmeTiffReader::读ChannelColor(UINT8 C)const noexcept
 {
 	return iChannelColor[C];
 }

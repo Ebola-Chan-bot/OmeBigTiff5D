@@ -473,7 +473,7 @@ UINT32 OmeBigTiff5D::SizeI() noexcept
 {
 	return 像素类型(寻找字符串(iPixelType.value(), 像素类型字符串, 像素类型个数));
 }
-颜色 OmeBigTiff5D::ChannelColor(UINT8 C)const noexcept
+颜色 OmeBigTiff5D::读ChannelColor(UINT8 C)const noexcept
 {
 	const xml_attribute 颜色属性 = iChannels[C].attribute("Color");
 	return 颜色{ .整数值 = 颜色属性 ? 颜色属性.as_uint() : -1 };
@@ -772,7 +772,7 @@ void OmeBigTiff5D::写ChannelColor(const 颜色* Colors) noexcept
 	if (更新图像描述并扩展文件(false, SizeI, SizePXY))
 		填充IFD(SizeI, 文件头->FirstIFD, 基地址, false, SizePXY);
 }
-void OmeBigTiff5D::ChannelColor(颜色 Color, UINT8 C) noexcept
+void OmeBigTiff5D::写ChannelColor(颜色 Color, UINT8 C) noexcept
 {
 	设置颜色(iChannels[C], Color);
 	UINT32 SizeI;

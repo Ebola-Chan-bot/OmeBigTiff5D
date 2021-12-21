@@ -14,7 +14,7 @@ public:
 	//返回当前文件维度顺序
 	virtual 维度顺序 DimensionOrder()const noexcept = 0;
 	//返回某一通道的颜色
-	virtual 颜色 ChannelColor(UINT8 C)const noexcept = 0;
+	virtual 颜色 读ChannelColor(UINT8 C)const noexcept = 0;
 	//调用方负责分配内存，本函数仅负责将当前各通道颜色写入该内存。内存空间不应小于SizeC。
 	virtual void 读ChannelColor(颜色* Colors)const noexcept = 0;
 	//返回图像描述字符串，具有0结尾。只读内部指针，调用方不应当修改其中的字符，否则将发生意外结果。
@@ -22,7 +22,7 @@ public:
 	//返回文件名字符串，具有0结尾。只读内部指针，调用方不应当修改其中的字符，否则将发生意外结果
 	virtual const char* FileName()const noexcept = 0;
 	/*
-	5D读取函数。给定要读取的目标位置，其每个维度的索引及尺寸。如果要顺序读取某个维度的全部位置，可将该维度索引指针设为nullptr。
+	5D读取函数。给定要读取的目标位置，其每个维度的索引及尺寸。如果要顺序读取某个维度的全部位置，可将该维度索引指针设为nullptr。此时对应的索引Size会被忽略，任何值均不影响结果。
 	调用方应当负责为BytesOut分配足够的内存，本函数只负责写入该内存。
 	需要缓存，因此不是常量
 	*/

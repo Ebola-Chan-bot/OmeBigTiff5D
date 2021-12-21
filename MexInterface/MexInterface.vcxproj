@@ -1,0 +1,161 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{0C9AE562-6E91-4E16-8661-9772476D91FB}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>$(DefaultPlatformToolset)</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>$(DefaultPlatformToolset)</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings" />
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LinkIncremental>false</LinkIncremental>
+    <TargetExt>.mexw64</TargetExt>
+    <OutDir>$(SolutionDir)+OmeBigTiff5D\+Internal\</OutDir>
+    <EmbedManifest>false</EmbedManifest>
+    <IntDir>$(ProjectDir)build\$(Platform)\$(Configuration)\</IntDir>
+    <MatlabRoot>C:\Program Files\MATLAB\R2021b\</MatlabRoot>
+    <Matlab_IncludePath>$(MatlabRoot)extern\include\;$(MatlabRoot)simulink\include\</Matlab_IncludePath>
+    <Matlab_LibraryPath>$(MatlabRoot)extern\lib\win64\microsoft\</Matlab_LibraryPath>
+    <Matlab_Dependencies>libmx.lib;libmex.lib;libmat.lib;libMatlabDataArray.lib;libMatlabEngine.lib</Matlab_Dependencies>
+    <Matlab_PreprocessorDefinitions>MATLAB_MEXCMD_RELEASE=R2017b;MX_COMPAT_64;USE_MEX_CMD;_CRT_SECURE_NO_DEPRECATE;_SCL_SECURE_NO_DEPRECATE;_SECURE_SCL=0;MATLAB_MEX_FILE</Matlab_PreprocessorDefinitions>
+    <IncludePath>$(SolutionDir)include\;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)lib\;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <LinkIncremental>false</LinkIncremental>
+    <TargetExt>.mexw64</TargetExt>
+    <OutDir>$(SolutionDir)+OmeBigTiff5D\+Internal\</OutDir>
+    <EmbedManifest>false</EmbedManifest>
+    <IntDir>$(ProjectDir)build\$(Platform)\$(Configuration)\</IntDir>
+    <MatlabRoot>C:\Program Files\MATLAB\R2021b\</MatlabRoot>
+    <Matlab_IncludePath>$(MatlabRoot)extern\include\;$(MatlabRoot)simulink\include\</Matlab_IncludePath>
+    <Matlab_LibraryPath>$(MatlabRoot)extern\lib\win64\microsoft\</Matlab_LibraryPath>
+    <Matlab_Dependencies>libmx.lib;libmex.lib;libmat.lib;libMatlabDataArray.lib;libMatlabEngine.lib</Matlab_Dependencies>
+    <Matlab_PreprocessorDefinitions>MATLAB_MEXCMD_RELEASE=R2017b;MX_COMPAT_64;USE_MEX_CMD;_CRT_SECURE_NO_DEPRECATE;_SCL_SECURE_NO_DEPRECATE;_SECURE_SCL=0;MATLAB_MEX_FILE</Matlab_PreprocessorDefinitions>
+    <IncludePath>$(SolutionDir)include\;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)lib\;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <PreprocessorDefinitions>$(Matlab_PreprocessorDefinitions);%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(Matlab_IncludePath);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <DebugInformationFormat>OldStyle</DebugInformationFormat>
+      <StructMemberAlignment>8Bytes</StructMemberAlignment>
+      <ExceptionHandling>SyncCThrow</ExceptionHandling>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <WarningLevel>Level3</WarningLevel>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
+      <EnableModules>true</EnableModules>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
+      <AdditionalLibraryDirectories>$(Matlab_LibraryPath);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>$(Matlab_Dependencies);%(AdditionalDependencies)</AdditionalDependencies>
+      <ProgramDatabaseFile>%(OutputFile).pdb</ProgramDatabaseFile>
+      <TargetMachine>MachineX64</TargetMachine>
+    </Link>
+    <Manifest>
+      <OutputManifestFile>$(OutDir)$(TargetName)$(TargetExt).manifest</OutputManifestFile>
+    </Manifest>
+    <ManifestResourceCompile>
+      <ResourceOutputFileName>$(IntDir)$(TargetName)$(TargetExt).manifest.res</ResourceOutputFileName>
+    </ManifestResourceCompile>
+    <PostBuildEvent>
+      <Command>del "$(OutDir)$(TargetName).exp" "$(OutDir)$(TargetName).lib" "$(OutDir)$(TargetName)$(TargetExt).manifest" "$(OutDir)$(TargetName).ilk"</Command>
+      <Message>   Deleting $(OutDir)$(TargetName).exp $(OutDir)$(TargetName).lib $(OutDir)$(TargetName)$(TargetExt).manifest and $(OutDir)$(TargetName).ilk</Message>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <PreprocessorDefinitions>$(Matlab_PreprocessorDefinitions);%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(Matlab_IncludePath);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <DebugInformationFormat>OldStyle</DebugInformationFormat>
+      <Optimization>MaxSpeed</Optimization>
+      <StructMemberAlignment>8Bytes</StructMemberAlignment>
+      <ExceptionHandling>SyncCThrow</ExceptionHandling>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <SupportJustMyCode>true</SupportJustMyCode>
+      <OmitFramePointers>false</OmitFramePointers>
+      <WarningLevel>Level3</WarningLevel>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
+      <EnableModules>true</EnableModules>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <EnableParallelCodeGeneration>true</EnableParallelCodeGeneration>
+      <EnableEnhancedInstructionSet>AdvancedVectorExtensions512</EnableEnhancedInstructionSet>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
+      <AdditionalLibraryDirectories>$(Matlab_LibraryPath);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>$(Matlab_Dependencies);%(AdditionalDependencies)</AdditionalDependencies>
+      <ProgramDatabaseFile>%(OutputFile).pdb</ProgramDatabaseFile>
+      <TargetMachine>MachineX64</TargetMachine>
+      <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
+    </Link>
+    <PostBuildEvent>
+      <Command>del "$(OutDir)$(TargetName).exp" "$(OutDir)$(TargetName).lib" "$(OutDir)$(TargetName)$(TargetExt).manifest" "$(OutDir)$(TargetName).ilk"</Command>
+      <Message>   Deleting $(OutDir)$(TargetName).exp $(OutDir)$(TargetName).lib $(OutDir)$(TargetName)$(TargetExt).manifest and $(OutDir)$(TargetName).ilk</Message>
+    </PostBuildEvent>
+    <Manifest>
+      <OutputManifestFile>$(OutDir)$(TargetName)$(TargetExt).manifest</OutputManifestFile>
+    </Manifest>
+    <ManifestResourceCompile>
+      <ResourceOutputFileName>$(IntDir)$(TargetName)$(TargetExt).manifest.res</ResourceOutputFileName>
+    </ManifestResourceCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="MexInterface.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="MexInterface.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\动态链接库\动态链接库.vcxproj">
+      <Project>{50c4f14c-8e03-42dd-a25a-847be4574463}</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <Import Project="$(MSBuildProjectDirectory)\matlab.targets" />
+</Project>

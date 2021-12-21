@@ -41,7 +41,7 @@ BYTE* ReaderBase::读像素指针(IFD偏移<Word, DWord>& 当前IFD偏移)
 }
 template BYTE* ReaderBase::读像素指针<UINT16, UINT32>(IFD偏移<UINT16, UINT32>& 当前IFD偏移);
 template BYTE* ReaderBase::读像素指针<UINT64, UINT64>(IFD偏移<UINT64, UINT64>& 当前IFD偏移);
-void ReaderBase::Read3DBase(UINT16 XSize, UINT16 YSize, UINT32 ISize, UINT64* XRange, UINT64* YRange, UINT64* IRange, BYTE* BytesOut)
+void ReaderBase::Read3DBase(UINT16 XSize, UINT16 YSize, UINT32 ISize, UINT64* XRange, UINT64* YRange, const UINT64* IRange, BYTE* BytesOut)
 {
 	UINT32 IStart, IEnd;
 	if (IRange)
@@ -69,7 +69,7 @@ void ReaderBase::Read3DBase(UINT16 XSize, UINT16 YSize, UINT32 ISize, UINT64* XR
 	N维切片参数(iBytesPerSample, 2, 各维尺寸, 下标长度, 下标, 偏移, 段长度);
 	const BYTE* 像素指针;
 	const BYTE* const* IFD像素指针 = GetIFD像素指针();
-	BYTE* 缓存 = (BYTE*)malloc(段长度);
+	//BYTE* 缓存 = (BYTE*)malloc(段长度);
 	if (IRange)
 	{
 		const UINT64* const IRangeEnd = IRange + ISize;
@@ -89,11 +89,11 @@ void ReaderBase::Read3DBase(UINT16 XSize, UINT16 YSize, UINT32 ISize, UINT64* XR
 			像素指针 = IFD像素指针[IStart++];
 			for (UINT64 O : 偏移)
 			{
-				
+				/*
 				memcpy(缓存, 像素指针 + O, 段长度);
 				memcpy(BytesOut, 缓存, 段长度);
-				
-				//memcpy(BytesOut, 像素指针 + O, 段长度);
+				*/
+				memcpy(BytesOut, 像素指针 + O, 段长度);
 				BytesOut += 段长度;
 			}
 		}

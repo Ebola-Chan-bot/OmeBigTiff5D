@@ -55,7 +55,7 @@ public:
 	UINT8 SizeZ()const noexcept override;
 	UINT16 SizeT()const noexcept override;
 	维度顺序 DimensionOrder()const noexcept override;
-	颜色 ChannelColor(UINT8 C)const noexcept override;
+	颜色 读ChannelColor(UINT8 C)const noexcept override;
 	void 读ChannelColor(颜色* Colors)const noexcept override;
 	//只读内部指针，调用方不应当修改其中的值
 	const char* ImageDescription()const noexcept override;
@@ -86,7 +86,7 @@ public:
 	void DimensionOrder(维度顺序 DO) noexcept override;
 	void PixelType(像素类型 PT) noexcept override;
 	void 写ChannelColor(const 颜色* Colors) noexcept override;
-	void ChannelColor(颜色 Color, UINT8 C) noexcept override;
+	void 写ChannelColor(颜色 Color, UINT8 C) noexcept override;
 	void FileName(const char* 文件名) noexcept override;
 	//标准OME图像描述里不一定包含TiffData字段，可能需要手动添加
 	void ImageDescription(const char* WriteIn) noexcept override;

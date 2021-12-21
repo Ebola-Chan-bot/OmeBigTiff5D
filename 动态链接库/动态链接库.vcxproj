@@ -78,14 +78,18 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <Linkage-pugixml>source</Linkage-pugixml>
-    <IncludePath>C:\Program Files (x86)\Intel\oneAPI\mkl\2021.4.0\include;$(IncludePath)</IncludePath>
+    <IncludePath>C:\Users\vhtmf\source\repos\OmeBigTiff5D\include;C:\Program Files (x86)\Intel\oneAPI\mkl\2021.4.0\include;$(IncludePath)</IncludePath>
     <LibraryPath>C:\Program Files (x86)\Intel\oneAPI\mkl\2021.4.0\lib\intel64;$(LibraryPath)</LibraryPath>
+    <OutDir>$(SolutionDir)lib\</OutDir>
+    <TargetName>OmeBigTiff5D</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
     <Linkage-pugixml>dynamic</Linkage-pugixml>
-    <IncludePath>C:\Program Files (x86)\Intel\oneAPI\mkl\2021.4.0\include;$(IncludePath)</IncludePath>
+    <IncludePath>C:\Users\vhtmf\source\repos\OmeBigTiff5D\include;C:\Program Files (x86)\Intel\oneAPI\mkl\2021.4.0\include;$(IncludePath)</IncludePath>
     <LibraryPath>C:\Program Files (x86)\Intel\oneAPI\mkl\2021.4.0\lib\intel64;$(LibraryPath)</LibraryPath>
+    <OutDir>$(SolutionDir)lib\</OutDir>
+    <TargetName>OmeBigTiff5D</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -173,15 +177,21 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\include\IOmeBigTiff5D.h" />
+    <ClInclude Include="..\include\IOmeTiffReader.h" />
+    <ClInclude Include="..\include\ITiffReader.h" />
+    <ClInclude Include="..\include\Tiff异常类型.h" />
+    <ClInclude Include="..\include\XML解析结果.h" />
+    <ClInclude Include="..\include\像素类型.h" />
+    <ClInclude Include="..\include\导出.h" />
+    <ClInclude Include="..\include\尝试结果.h" />
+    <ClInclude Include="..\include\结果分类.h" />
+    <ClInclude Include="..\include\维度顺序.h" />
+    <ClInclude Include="..\include\颜色.h" />
     <ClInclude Include="BigTiffReader.h" />
     <ClInclude Include="BigTiff文件头.h" />
     <ClInclude Include="Compression.h" />
     <ClInclude Include="CZT重排.h" />
-    <ClInclude Include="IOmeBigTiff5D.h" />
-    <ClInclude Include="IOmeTiffReader.h" />
-    <ClInclude Include="I使用内存映射文件.h" />
-    <ClInclude Include="XML解析结果.h" />
-    <ClInclude Include="尝试结果.h" />
     <ClInclude Include="pugiconfig.hpp" />
     <ClInclude Include="pugixml.hpp" />
     <ClInclude Include="ReaderBase.h" />
@@ -194,7 +204,6 @@
     <ClInclude Include="SmallTiffReader.h" />
     <ClInclude Include="SmallTiff文件头.h" />
     <ClInclude Include="Tiff异常.h" />
-    <ClInclude Include="Tiff异常类型.h" />
     <ClInclude Include="XML内存分配.h" />
     <ClInclude Include="XML内存释放.h" />
     <ClInclude Include="XML文本接收器.h" />
@@ -203,12 +212,9 @@
     <ClInclude Include="像素类型个数.h" />
     <ClInclude Include="像素类型字符串.h" />
     <ClInclude Include="像素类型尺寸.h" />
-    <ClInclude Include="像素类型.h" />
     <ClInclude Include="寻找字符串.h" />
-    <ClInclude Include="导出.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="IFD.h" />
-    <ClInclude Include="ITiffReader.h" />
     <ClInclude Include="NumberType.h" />
     <ClInclude Include="OmeBigTiff5D.h" />
     <ClInclude Include="OmeBigTiff5D文件头.h" />
@@ -218,7 +224,6 @@
     <ClInclude Include="Win32异常.h" />
     <ClInclude Include="是否间断.h" />
     <ClInclude Include="模块句柄.h" />
-    <ClInclude Include="结果分类.h" />
     <ClInclude Include="维度顺序个数.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="SRational.h" />
@@ -228,9 +233,7 @@
     <ClInclude Include="TiffReader.h" />
     <ClInclude Include="文件偏移.h" />
     <ClInclude Include="维度顺序字符串.h" />
-    <ClInclude Include="维度顺序.h" />
     <ClInclude Include="通道ID模板.h" />
-    <ClInclude Include="颜色.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="BigTiffReader.cpp" />

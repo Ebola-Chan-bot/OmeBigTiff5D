@@ -48,9 +48,6 @@
     <ClInclude Include="TagType.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="颜色.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="文件偏移.h">
       <Filter>头文件</Filter>
     </ClInclude>
@@ -69,25 +66,7 @@
     <ClInclude Include="Tiff文件头.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="导出.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="维度顺序字符串.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="维度顺序.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="ITiffReader.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="IOmeTiffReader.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="IOmeBigTiff5D.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="像素类型.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="像素类型字符串.h">
@@ -135,9 +114,6 @@
     <ClInclude Include="OmeSmallTiffReader.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="I使用内存映射文件.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="XML内存释放.h">
       <Filter>头文件</Filter>
     </ClInclude>
@@ -171,9 +147,6 @@
     <ClInclude Include="Tiff异常.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Tiff异常类型.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="XML模板.h">
       <Filter>头文件</Filter>
     </ClInclude>
@@ -183,13 +156,37 @@
     <ClInclude Include="模块句柄.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="结果分类.h">
+    <ClInclude Include="..\include\IOmeBigTiff5D.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="尝试结果.h">
+    <ClInclude Include="..\include\IOmeTiffReader.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="XML解析结果.h">
+    <ClInclude Include="..\include\ITiffReader.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\尝试结果.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\导出.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\结果分类.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\维度顺序.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\像素类型.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\颜色.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\Tiff异常类型.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\XML解析结果.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

@@ -41,7 +41,7 @@ public:
 	//返回当前文件维度顺序
 	维度顺序 DimensionOrder()const noexcept override;
 	//返回某一通道的颜色
-	颜色 ChannelColor(UINT8 C)const noexcept override;
+	颜色 读ChannelColor(UINT8 C)const noexcept override;
 	//调用方负责分配内存，本函数仅负责将当前各通道颜色写入该内存。内存空间不应小于SizeC。
 	void 读ChannelColor(颜色* Colors)const noexcept override;
 	//返回图像描述字符串，具有0结尾。只读内部指针，调用方不应当修改其中的字符，否则将发生意外结果。

@@ -11,7 +11,7 @@ public:
 	virtual UINT32 SizeI()noexcept = 0;
 	virtual 像素类型 PixelType()const noexcept = 0;
 	virtual UINT8 BytesPerSample()const noexcept = 0;
-	//将*Range参数设为nullptr表示完整读取该维度
+	//将Range参数设为nullptr表示完整读取该维度，此时对应的Size值会被忽略
 	virtual void 读入像素3D(UINT16 XSize, UINT16 YSize, UINT32 ISize, UINT64* XRange, UINT64* YRange, UINT64* IRange, BYTE* BytesOut) noexcept = 0;
 	//直接返回指定位置像素存储位置的内部指针，只读
 	virtual const BYTE* 内部像素指针3D(UINT16 X, UINT16 Y, UINT32 I) noexcept = 0;

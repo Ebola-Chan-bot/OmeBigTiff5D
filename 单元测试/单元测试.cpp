@@ -1,8 +1,6 @@
 ﻿#include "pch.h"
 #include "CppUnitTest.h"
 #include "IOmeBigTiff5D.h"
-#include "Win32异常.h"
-#include <winerror.h>
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 namespace 单元测试

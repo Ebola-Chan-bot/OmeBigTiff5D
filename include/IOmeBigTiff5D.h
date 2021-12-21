@@ -62,7 +62,7 @@ public:
 	如果要修改多个参数，请使用“修改基本参数”一次调用完成，性能更高。
 	由于ImageJ的Bug，含有红色分量的颜色会导致ImageJ无法解析整个OME XML。但生成的文件是正确的，仅仅是ImageJ的bug。
 	*/
-	virtual void ChannelColor(颜色 Color, UINT8 C)noexcept = 0;
+	virtual void 写ChannelColor(颜色 Color, UINT8 C)noexcept = 0;
 	/*
 	OME规范要求文件名必须在文件内部也有一致的记录，因此要修改文件名就必须同时也修改这个属性。
 	如果要修改多个参数，请使用“修改基本参数”一次调用完成，性能更高。
@@ -70,7 +70,7 @@ public:
 	virtual void FileName(const char* 文件名)noexcept = 0;
 	//一般用于将其它文件中取得的图像描述直接拷贝进来。如果缺少或不具有正确的文件名和TiffData信息，将会自动纠正。字符串应当是0结尾的。
 	virtual void ImageDescription(const char* WriteIn)noexcept = 0;
-	//5D写入，给定要写入的目标位置，其每个维度的索引及尺寸。如果要顺序写入某个维度的全部位置，可将该维度索引指针设为nullptr。
+	//5D写入，给定要写入的目标位置，其每个维度的索引及尺寸。如果要顺序写入某个维度的全部位置，可将该维度索引指针设为nullptr。此时对应的Size会被忽略，任何值均不影响结果
 	virtual void 写出像素(UINT16 XSize, UINT16 YSize, UINT8 CSize, UINT8 ZSize, UINT16 TSize, UINT64* XRange, UINT64* YRange, UINT64* CRange, UINT64* ZRange, UINT64* TRange, const BYTE* BytesIn)const noexcept = 0;
 	//打开现存的有效的文件。如果文件不存在或格式不正确，将产生意外结果。
 	virtual void 打开现存(LPCWSTR 文件路径)noexcept = 0;
