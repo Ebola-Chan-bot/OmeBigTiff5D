@@ -1,15 +1,5 @@
 classdef OmeTiffReader<OBT5.TiffReader
 	%支持OME规范的Tiff读取器
-	properties(Dependent)
-		%OME-TIFF规范要求将文件名信息存储在图像描述中
-		FileName(1,:)char
-		SizeC(1,1)uint8
-		SizeZ(1,1)uint8
-		SizeT(1,1)uint8
-		%像素数值在磁盘上实际的排列顺序，从低维度到高维度。
-		DimensionOrder(1,1)OBT5.DimesionOrder
-		ImageDescription(1,:)char
-	end
 	methods(Access=protected)
 		function obj = OmeTiffReader(Pointer)
 			obj@OBT5.TiffReader(Pointer);
@@ -32,27 +22,27 @@ classdef OmeTiffReader<OBT5.TiffReader
 			% obj(1,1)OBT5.OmeTiffReader
 			%% 用例
 			% obj=OmeTiffReader.Create('D:\Image.tif');
-			obj=OmeTiffReader(CheckPos(MexInterface(uint8(OBT5.Internal.ApiCode.CreateOmeTiffReader),FilePath,varargin{:})));
+			obj=OBT5.OmeTiffReader(CheckPos(MexInterface(uint8(OBT5.Internal.ApiCode.CreateOmeTiffReader),FilePath,varargin{:})));
 		end
 	end
 	methods
-		function Name=get.FileName(obj)
-			Name=MexInterface(uint8(OBT5.Internal.ApiCode.GetFileName),obj.Pointer);
+		function Name=FileName(obj)
+			Name=MexInterface(uint8(OBT5.Internal.ApiCode.FileName),obj.Pointer);
 		end
-		function Size=get.SizeC(obj)
-			Size=MexInterface(uint8(OBT5.Internal.ApiCode.GetSizeC),obj.Pointer);
+		function Size=SizeC(obj)
+			Size=MexInterface(uint8(OBT5.Internal.ApiCode.SizeC),obj.Pointer);
 		end
-		function Size=get.SizeZ(obj)
-			Size=MexInterface(uint8(OBT5.Internal.ApiCode.GetSizeZ),obj.Pointer);
+		function Size=SizeZ(obj)
+			Size=MexInterface(uint8(OBT5.Internal.ApiCode.SizeZ),obj.Pointer);
 		end
-		function Size=get.SizeT(obj)
-			Size=MexInterface(uint8(OBT5.Internal.ApiCode.GetSizeT),obj.Pointer);
+		function Size=SizeT(obj)
+			Size=MexInterface(uint8(OBT5.Internal.ApiCode.SizeT),obj.Pointer);
 		end
-		function Order=get.DimensionOrder(obj)
-			Order=OBT5.DimensionOrder(MexInterface(uint8(OBT5.Internal.ApiCode.GetDimensionOrder),obj.Pointer));
+		function Order=DimensionOrder(obj)
+			Order=OBT5.DimensionOrder(MexInterface(uint8(OBT5.Internal.ApiCode.DimensionOrder),obj.Pointer));
 		end
-		function Description=get.ImageDescription(obj)
-			Description=MexInterface(uint8(OBT5.Internal.ApiCode.GetImageDescription),obj.Pointer);
+		function Description=ImageDescription(obj)
+			Description=MexInterface(uint8(OBT5.Internal.ApiCode.ImageDescription),obj.Pointer);
 		end
 		function Color=ChannelColor(varargin)
 			%获取全部或指定通道的颜色

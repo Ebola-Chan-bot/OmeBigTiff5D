@@ -9,3 +9,4 @@ struct BigTiff文件头 :public Tiff文件头
 	IFD偏移<UINT64, UINT64> FirstIFD;
 	BigTiff文件头();
 };
+#pragma pack()

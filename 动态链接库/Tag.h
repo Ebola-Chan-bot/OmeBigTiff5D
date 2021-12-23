@@ -45,5 +45,6 @@ struct Tag
 		文件偏移<DWord, UINT64> IFD8偏移;
 	};
 };
+#pragma pack()
 extern template struct Tag<UINT32>;
 extern template struct Tag<UINT64>;

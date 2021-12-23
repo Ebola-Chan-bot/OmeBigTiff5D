@@ -80,7 +80,7 @@
     <Linkage-pugixml>source</Linkage-pugixml>
     <IncludePath>C:\Users\vhtmf\source\repos\OmeBigTiff5D\include;C:\Program Files (x86)\Intel\oneAPI\mkl\2021.4.0\include;$(IncludePath)</IncludePath>
     <LibraryPath>C:\Program Files (x86)\Intel\oneAPI\mkl\2021.4.0\lib\intel64;$(LibraryPath)</LibraryPath>
-    <OutDir>$(SolutionDir)lib\</OutDir>
+    <OutDir>$(SolutionDir)+OBT5\private\</OutDir>
     <TargetName>OmeBigTiff5D</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -88,7 +88,7 @@
     <Linkage-pugixml>dynamic</Linkage-pugixml>
     <IncludePath>C:\Users\vhtmf\source\repos\OmeBigTiff5D\include;C:\Program Files (x86)\Intel\oneAPI\mkl\2021.4.0\include;$(IncludePath)</IncludePath>
     <LibraryPath>C:\Program Files (x86)\Intel\oneAPI\mkl\2021.4.0\lib\intel64;$(LibraryPath)</LibraryPath>
-    <OutDir>$(SolutionDir)lib\</OutDir>
+    <OutDir>$(SolutionDir)+OBT5\private\</OutDir>
     <TargetName>OmeBigTiff5D</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -207,7 +207,6 @@
     <ClInclude Include="XML内存分配.h" />
     <ClInclude Include="XML内存释放.h" />
     <ClInclude Include="XML文本接收器.h" />
-    <ClInclude Include="XML模板.h" />
     <ClInclude Include="下标转索引.h" />
     <ClInclude Include="像素类型个数.h" />
     <ClInclude Include="像素类型字符串.h" />

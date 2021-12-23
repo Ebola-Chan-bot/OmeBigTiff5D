@@ -33,7 +33,7 @@ classdef OmeBigTiff5D<OBT5.OmeTiffReader
 		SizeZ(1,1)uint8
 		SizeT(1,1)uint8
 		%像素数值在磁盘上实际的排列顺序，从低维度到高维度。
-		DimensionOrder(1,1)OBT5.DimesionOrder
+		DimensionOrder(1,1)OBT5.DimensionOrder
 		ImageDescription(1,:)char
 	end
 	methods(Access=protected)
@@ -68,8 +68,8 @@ classdef OmeBigTiff5D<OBT5.OmeTiffReader
 			% obj(1,1)OBT5.OmeBigTiff5D
 			% Open(1,1)logical，使用OpenOrCreate时，返回逻辑值，指示图像是否被打开而非新建
 			if nargin>8
-				varargin{8}=uint8(varargin{8});
-				varargin{9}=uint8(varargin{9});
+				varargin{6}=uint8(varargin{6});
+				varargin{7}=uint8(varargin{7});
 			end
 			varargin=[{uint8(OBT5.Internal.ApiCode.CreateOmeBigTiff5D),uint8(CD),FilePath} varargin];
 			if CD==OBT5.CreationDisposition.OpenOrCreate
@@ -77,65 +77,65 @@ classdef OmeBigTiff5D<OBT5.OmeTiffReader
 			else
 				POS=MexInterface(varargin{:});
 			end
-			obj=OmeBigTiff5D(CheckPos(POS));
+			obj=OBT5.OmeBigTiff5D(CheckPos(POS));
 		end
 	end
 	methods
 		function Size=get.SizeX(obj)
-			Size=MexInterface(uint8(OBT5.Internal.ApiCode.GetSizeX),obj.Pointer);
+			Size=MexInterface(uint8(OBT5.Internal.ApiCode.SizeX),obj.Pointer);
 		end
 		function set.SizeX(obj,Size)
-			MexInterface(uint8(OBT5.Internal.ApiCode.SetSizeX),obj.Pointer,Size);
+			MexInterface(uint8(OBT5.Internal.ApiCode.SizeX),obj.Pointer,Size);
 		end
 		function Size=get.SizeY(obj)
-			Size=MexInterface(uint8(OBT5.Internal.ApiCode.GetSizeY),obj.Pointer);
+			Size=MexInterface(uint8(OBT5.Internal.ApiCode.SizeY),obj.Pointer);
 		end
 		function set.SizeY(obj,Size)
-			MexInterface(uint8(OBT5.Internal.ApiCode.SetSizeY),obj.Pointer,Size);
+			MexInterface(uint8(OBT5.Internal.ApiCode.SizeY),obj.Pointer,Size);
 		end
 		function Type=get.PixelType(obj)
-			Type=OBT5.PixelType(MexInterface(uint8(OBT5.Internal.ApiCode.GetPixelType),obj.Pointer));
+			Type=OBT5.PixelType(MexInterface(uint8(OBT5.Internal.ApiCode.PixelType),obj.Pointer));
 		end
 		function set.PixelType(obj,Type)
-			MexInterface(uint8(OBT5.Internal.ApiCode.SetPixelType),obj.Pointer,uint8(Type));
+			MexInterface(uint8(OBT5.Internal.ApiCode.PixelType),obj.Pointer,uint8(Type));
 		end
 		function Name=get.FileName(obj)
-			Name=MexInterface(uint8(OBT5.Internal.ApiCode.GetFileName),obj.Pointer);
+			Name=MexInterface(uint8(OBT5.Internal.ApiCode.FileName),obj.Pointer);
 		end
 		function set.FileName(obj,Name)
-			MexInterface(uint8(OBT5.Internal.ApiCode.SetFileName),obj.Pointer,Name);
+			MexInterface(uint8(OBT5.Internal.ApiCode.FileName),obj.Pointer,Name);
 		end
 		function Size=get.SizeC(obj)
-			Size=MexInterface(uint8(OBT5.Internal.ApiCode.GetSizeC),obj.Pointer);
+			Size=MexInterface(uint8(OBT5.Internal.ApiCode.SizeC),obj.Pointer);
 		end
 		function set.SizeC(obj,Size)
-			MexInterface(uint8(OBT5.Internal.ApiCode.SetSizeC),obj.Pointer,Size);
+			MexInterface(uint8(OBT5.Internal.ApiCode.SizeC),obj.Pointer,Size);
 		end
 		function Size=get.SizeZ(obj)
-			Size=MexInterface(uint8(OBT5.Internal.ApiCode.GetSizeZ),obj.Pointer);
+			Size=MexInterface(uint8(OBT5.Internal.ApiCode.SizeZ),obj.Pointer);
 		end
 		function set.SizeZ(obj,Size)
-			MexInterface(uint8(OBT5.Internal.ApiCode.SetSizeZ),obj.Pointer,Size);
+			MexInterface(uint8(OBT5.Internal.ApiCode.SizeZ),obj.Pointer,Size);
 		end
 		function Size=get.SizeT(obj)
-			Size=MexInterface(uint8(OBT5.Internal.ApiCode.GetSizeT),obj.Pointer);
+			Size=MexInterface(uint8(OBT5.Internal.ApiCode.SizeT),obj.Pointer);
 		end
 		function set.SizeT(obj,Size)
-			MexInterface(uint8(OBT5.Internal.ApiCode.SetSizeT),obj.Pointer,Size);
+			MexInterface(uint8(OBT5.Internal.ApiCode.SizeT),obj.Pointer,Size);
 		end
 		function Order=get.DimensionOrder(obj)
-			Order=OBT5.DimensionOrder(MexInterface(uint8(OBT5.Internal.ApiCode.GetDimensionOrder),obj.Pointer));
+			Order=OBT5.DimensionOrder(MexInterface(uint8(OBT5.Internal.ApiCode.DimensionOrder),obj.Pointer));
 		end
 		function set.DimensionOrder(obj,Order)
-			MexInterface(uint8(OBT5.Internal.ApiCode.SetSizeX),obj.Pointer,uint8(Order));
+			MexInterface(uint8(OBT5.Internal.ApiCode.SizeX),obj.Pointer,uint8(Order));
 		end
 		function Description=get.ImageDescription(obj)
-			Description=MexInterface(uint8(OBT5.Internal.ApiCode.GetImageDescription),obj.Pointer);
+			Description=MexInterface(uint8(OBT5.Internal.ApiCode.ImageDescription),obj.Pointer);
 		end
 		function set.ImageDescription(obj,Description)
-			MexInterface(uint8(OBT5.Internal.ApiCode.SetSizeX),obj.Pointer,Description);
+			MexInterface(uint8(OBT5.Internal.ApiCode.SizeX),obj.Pointer,Description);
 		end
-		function Color=ChannelColor(obj,varargin)
+		function varargout=ChannelColor(obj,varargin)
 			%获取或设置全部或指定通道的颜色
 			%返回的每个颜色值为uint32类型，可通过typecast函数转换为ABGR分量。例如如果返回颜色值16711935(0xff00ff)，则可计算如下：
 			% >>typecast(0xff00ff,'uint8')
@@ -159,11 +159,8 @@ classdef OmeBigTiff5D<OBT5.OmeTiffReader
 			% Color(1,1)uint32，要设置的单个通道的颜色
 			%% 返回值
 			% Color(:,1)uint32，如果指定了Channel参数则为标量，表示指定通道的颜色；否则为列向量，依次排列所有通道的颜色。
-			if isa(varargin{1},'uint32')
-				MexInterface(uint8(OBT5.Internal.ApiCode.ChannelColor),obj.Pointer,varargin{:});
-			else
-				Color=MexInterface(uint8(OBT5.Internal.ApiCode.ChannelColor),obj.Pointer,varargin{:});
-			end
+			varargout=cell(1,nargout);
+			[varargout{:}]=MexInterface(uint8(OBT5.Internal.ApiCode.ChannelColor),obj.Pointer,varargin{:});
 		end
 		function WritePixels5D(obj,AOP,options)
 			%向文件写出5D像素数据
@@ -185,6 +182,33 @@ classdef OmeBigTiff5D<OBT5.OmeTiffReader
 				options.T(1,:)uint64=uint64.empty
 			end
 			MexInterface(uint8(OBT5.Internal.ApiCode.WritePixels5D),obj.Pointer,options.X,options.Y,options.C,options.Z,options.T,AOP);
+		end
+		function ModifyMultiParameters(obj,options)
+			%一次性修改多个基本参数
+			%每次修改基本参数，底层都要对文件结构作调整，性能开销较大。建议用本函数一次性修改多个基本参数，然后仅作一次调整。
+			%% 名称值参数（可以同时修改的参数）
+			% SizeX(1,1)uint16
+			% SizeY(1,1)uint16
+			% SizeC(1,1)uint8
+			% SizeZ(1,1)uint8
+			% SizeT(1,1)uint16
+			% DimensionOrder(1,1)OBT5.DimensionOrder
+			% PixelType(1,1)OBT5.PixelType
+			% Colors(:,1)uint32
+			% FileName(1,:)char
+			arguments
+				obj(1,1)OBT5.OmeBigTiff5D
+				options.SizeX(1,1)uint16=0
+				options.SizeY(1,1)uint16=0
+				options.SizeC(1,1)uint8=0
+				options.SizeZ(1,1)uint8=0
+				options.SizeT(1,1)uint16=0
+				options.DimensionOrder(1,1)OBT5.DimensionOrder=OBT5.DimensionOrder.DEFAULT
+				options.PixelType(1,1)OBT5.PixelType=OBT5.PixelType.DEFAULT
+				options.Colors(:,1)uint32=uint32.empty
+				options.FileName(1,:)char=char.empty
+			end
+			MexInterface(uint8(OBT5.Internal.ApiCode.ModifyMultiParameters),obj.Pointer,options.SizeX,options.SizeY,options.SizeC,options.SizeZ,options.SizeT,uint8(options.DimensionOrder),uint8(options.PixelType),options.Colors,options.FileName);
 		end
 	end
 end

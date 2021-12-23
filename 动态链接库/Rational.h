@@ -5,3 +5,4 @@ struct Rational
 	UINT32 Numerator;
 	UINT32 Denominator;
 };
+#pragma pack()

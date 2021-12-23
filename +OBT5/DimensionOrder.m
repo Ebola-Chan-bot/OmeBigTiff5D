@@ -1,4 +1,4 @@
-classdef DimesionOrder<uint8
+classdef DimensionOrder<uint8
 	enumeration
 		XYCZT(0)
 		XYCTZ(1)

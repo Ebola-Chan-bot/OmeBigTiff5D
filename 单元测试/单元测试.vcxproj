@@ -79,6 +79,7 @@
     <LinkIncremental>false</LinkIncremental>
     <IncludePath>C:\Users\vhtmf\source\repos\OmeBigTiff5D\include;$(IncludePath)</IncludePath>
     <LibraryPath>$(OutDir)lib\;$(LibraryPath)</LibraryPath>
+    <OutDir>$(SolutionDir)+OBT5\private\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
@@ -87,6 +88,7 @@
     <LinkIncremental>true</LinkIncremental>
     <IncludePath>C:\Users\vhtmf\source\repos\OmeBigTiff5D\include;$(IncludePath)</IncludePath>
     <LibraryPath>$(OutDir)lib\;$(LibraryPath)</LibraryPath>
+    <OutDir>$(SolutionDir)+OBT5\private\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>

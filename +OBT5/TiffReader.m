@@ -3,14 +3,6 @@ classdef TiffReader<handle
 	properties(GetAccess=protected,SetAccess=immutable)
 		Pointer(1,1)uint64
 	end
-	properties(Dependent)
-		SizeX(1,1)uint16
-		SizeY(1,1)uint16
-		SizeI(1,1)uint32
-		PixelType(1,1)OBT5.PixelType
-		%每个像素的字节数
-		BytesPerSample(1,1)uint8
-	end
 	methods(Access=protected)
 		function obj = TiffReader(Pointer)
 			obj.Pointer=Pointer;
@@ -33,26 +25,26 @@ classdef TiffReader<handle
 			% obj(1,1)OBT5.TiffReader
 			%% 用例
 			% obj=TiffReader.Create('D:\Image.tif');
-			obj=TiffReader(CheckPos(MexInterface(uint8(OBT5.Internal.ApiCode.CreateTiffReader),FilePath,varargin{:})));
+			obj=OBT5.TiffReader(CheckPos(MexInterface(uint8(OBT5.Internal.ApiCode.CreateTiffReader),FilePath,varargin{:})));
 		end
 	end
 	methods
 		function delete(obj)
 			obj.ReleasePointer;
 		end
-		function Size=get.SizeX(obj)
-			Size=MexInterface(uint8(OBT5.Internal.ApiCode.GetSizeX),obj.Pointer);
+		function Size=SizeX(obj)
+			Size=MexInterface(uint8(OBT5.Internal.ApiCode.SizeX),obj.Pointer);
 		end
-		function Size=get.SizeY(obj)
-			Size=MexInterface(uint8(OBT5.Internal.ApiCode.GetSizeY),obj.Pointer);
+		function Size=SizeY(obj)
+			Size=MexInterface(uint8(OBT5.Internal.ApiCode.SizeY),obj.Pointer);
 		end
-		function Size=get.SizeI(obj)
-			Size=MexInterface(uint8(OBT5.Internal.ApiCode.GetSizeI),obj.Pointer);
+		function Size=SizeI(obj)
+			Size=MexInterface(uint8(OBT5.Internal.ApiCode.SizeI),obj.Pointer);
 		end
-		function Type=get.PixelType(obj)
-			Type=OBT5.PixelType(MexInterface(uint8(OBT5.Internal.ApiCode.GetPixelType),obj.Pointer));
+		function Type=PixelType(obj)
+			Type=OBT5.PixelType(MexInterface(uint8(OBT5.Internal.ApiCode.PixelType),obj.Pointer));
 		end
-		function Bytes=get.BytesPerSample(obj)
+		function Bytes=BytesPerSample(obj)
 			Bytes=MexInterface(uint8(OBT5.Internal.ApiCode.BytesPerSample),obj.Pointer);
 		end
 		function Pixels=ReadPixels3D(obj,options)

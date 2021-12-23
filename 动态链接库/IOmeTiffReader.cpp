@@ -28,7 +28,7 @@ OmeBigTiff5D导出(IOmeTiffReader*) 创建OmeTiffReader(LPCWSTR 文件路径)
 OmeBigTiff5D导出(IOmeTiffReader*) 尝试创建OmeTiffReader(LPCWSTR 文件路径, 尝试结果& 结果)
 {
 	const HANDLE File = CreateFileW(文件路径, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
-	if (!File)
+	if (File==INVALID_HANDLE_VALUE)
 	{
 		结果 = 尝试结果{ .结果 = 结果分类::Win32异常,.错误代码 = GetLastError(),.错误消息 = "打开文件失败" };
 		return nullptr;

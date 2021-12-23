@@ -79,6 +79,8 @@ void OmeBigTiff5D::打开现存(LPCWSTR 文件路径)noexcept
 尝试结果 OmeBigTiff5D::尝试打开(LPCWSTR 文件路径)noexcept
 {
 	File = CreateFileW(文件路径, GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+	if (File == INVALID_HANDLE_VALUE)
+		return 尝试结果{ .结果 = 结果分类::Win32异常,.错误代码 = GetLastError(),.错误消息 = "打开文件失败" };
 	LARGE_INTEGER 文件尺寸{ .QuadPart = 0 };
 	SetFilePointerEx(File, 文件尺寸, &文件尺寸, FILE_END);
 	建立映射();

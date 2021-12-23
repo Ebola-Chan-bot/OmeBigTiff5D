@@ -4726,7 +4726,6 @@ PUGI__NS_BEGIN
 
 		// remember encoding
 		res.encoding = buffer_encoding;
-
 		return res;
 	}
 

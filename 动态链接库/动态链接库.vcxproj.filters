@@ -147,9 +147,6 @@
     <ClInclude Include="Tiff异常.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="XML模板.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="resource.h">
       <Filter>头文件</Filter>
     </ClInclude>

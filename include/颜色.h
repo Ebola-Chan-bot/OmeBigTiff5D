@@ -10,4 +10,5 @@ union 颜色
 		UINT8 G;
 		UINT8 R;
 	}RGBA;
+#pragma pack()
 };

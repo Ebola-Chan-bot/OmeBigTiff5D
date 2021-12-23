@@ -19,3 +19,4 @@ struct 文件偏移
 		return 文件偏移::偏移 < 偏移;
 	}
 };
+#pragma pack()

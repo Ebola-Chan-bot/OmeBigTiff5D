@@ -15,7 +15,7 @@ struct IFD偏移
 	IFD偏移();
 	bool operator<(DWord 偏移)const;
 };
-#pragma pack(4)
+#pragma pack()
 template <NumberType Word, NumberType DWord>
 struct IFD指针
 {

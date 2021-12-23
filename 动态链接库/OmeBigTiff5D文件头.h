@@ -5,3 +5,4 @@ struct OmeBigTiff5D文件头 :public BigTiff文件头
 {
 	UINT8 规范5D = 79;
 };
+#pragma pack()
