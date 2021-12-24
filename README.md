@@ -77,4 +77,4 @@ OmeBigTiff5D是作者在OME BigTiff基础上进一步严格格式规范：
 
 不同于其基类，该类的创建使用无参数的`创建OmeBigTiff5D`，然后调用`打开现存`、`尝试打开`、`打开或创建`或`覆盖创建`，以载入或创建磁盘上的文件。创建类的方法需要提供基本参数，包括各维尺寸、维度顺序、像素类型；也可以提供图像描述文本，自动解析基本参数。
 ## 使用MATLAB工具箱
-工具箱文档见doc\GettingStarted.mlx。
+工具箱文档见MATLAB工具箱\doc\GettingStarted.mlx。
