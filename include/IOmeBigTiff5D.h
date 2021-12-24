@@ -62,7 +62,7 @@ public:
 	如果要修改多个参数，请使用“修改基本参数”一次调用完成，性能更高。
 	由于ImageJ的Bug，含有红色分量的颜色会导致ImageJ无法解析整个OME XML。但生成的文件是正确的，仅仅是ImageJ的bug。
 	*/
-	virtual void 写ChannelColor(颜色 Color, UINT8 C)noexcept = 0;
+	virtual void 写ChannelColor(UINT8 C, 颜色 Color)noexcept = 0;
 	/*
 	OME规范要求文件名必须在文件内部也有一致的记录，因此要修改文件名就必须同时也修改这个属性。
 	如果要修改多个参数，请使用“修改基本参数”一次调用完成，性能更高。

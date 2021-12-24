@@ -88,7 +88,7 @@
     <Linkage-pugixml>dynamic</Linkage-pugixml>
     <IncludePath>C:\Users\vhtmf\source\repos\OmeBigTiff5D\include;C:\Program Files (x86)\Intel\oneAPI\mkl\2021.4.0\include;$(IncludePath)</IncludePath>
     <LibraryPath>C:\Program Files (x86)\Intel\oneAPI\mkl\2021.4.0\lib\intel64;$(LibraryPath)</LibraryPath>
-    <OutDir>$(SolutionDir)+OBT5\private\</OutDir>
+    <OutDir>$(SolutionDir)\lib\</OutDir>
     <TargetName>OmeBigTiff5D</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">

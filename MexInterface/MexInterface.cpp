@@ -183,20 +183,20 @@ API声明(DestroyOmeTiffReader)
 Create5D声明(打开现存)
 {
 	IOmeBigTiff5D* const 对象指针 = 创建OmeBigTiff5D();
-	const String 文件路径 = GetString(inputs[2]);
+	const String 文件路径 = GetString(inputs[1]);
 	对象指针->打开现存(LPCWSTR(文件路径.c_str()));
 	outputs[0]=数组工厂.createScalar(UINT64(对象指针));
 }
 Create5D声明(尝试打开)
 {
 	IOmeBigTiff5D* const 对象指针 = 创建OmeBigTiff5D();
-	const String 文件路径 = GetString(inputs[2]);
+	const String 文件路径 = GetString(inputs[1]);
 	outputs[0]= 处理结果(对象指针->尝试打开(LPCWSTR(文件路径.c_str())), 对象指针);
 }
 Create5D声明(打开或创建)
 {
 	IOmeBigTiff5D* const 对象指针 = 创建OmeBigTiff5D();
-	const String 文件路径 = GetString(inputs[2]);
+	const String 文件路径 = GetString(inputs[1]);
 	if (inputs.size() < 5)
 	{
 		char* 图像描述 = GetUtf8(inputs[3]);
@@ -210,7 +210,7 @@ Create5D声明(打开或创建)
 Create5D声明(覆盖创建)
 {
 	IOmeBigTiff5D* const 对象指针 = 创建OmeBigTiff5D();
-	const String 文件路径 = GetString(inputs[2]);
+	const String 文件路径 = GetString(inputs[1]);
 	if (inputs.size() < 5)
 	{
 		char* 图像描述 = GetUtf8(inputs[3]);
@@ -224,7 +224,7 @@ Create5D声明(覆盖创建)
 API声明(CreateOmeBigTiff5D)
 {
 	constexpr void(*(Create5D方法[]))(ArgumentList&,ArgumentList&) = { 打开现存,尝试打开,打开或创建,覆盖创建 };
-	Create5D方法[Get数值<UINT8>(inputs[1])](outputs,inputs);
+	Create5D方法[Get数值<UINT8>(inputs[2])](outputs,inputs);
 }
 API声明(DestroyOmeBigTiff5D)
 {
@@ -294,7 +294,7 @@ API声明(ChannelColor)
 			outputs[0] = 数组工厂.createScalar(Get对象指针<IOmeTiffReader>(inputs[1])->读ChannelColor(Get数值<UINT8>(inputs[2])).整数值);
 		break;
 	case 4:
-		Get对象指针<IOmeBigTiff5D>(inputs[1])->写ChannelColor(颜色{ .整数值 = Get标量<UINT32>(inputs[2]) }, Get数值<UINT8>(inputs[3]));
+		Get对象指针<IOmeBigTiff5D>(inputs[1])->写ChannelColor(Get数值<UINT8>(inputs[2]), 颜色{ .整数值 = Get标量<UINT32>(inputs[3]) });
 		break;
 	}
 }
