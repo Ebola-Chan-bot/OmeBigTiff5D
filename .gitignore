@@ -361,9 +361,5 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
-
-测试用例
-*.exp
-*.lib
-*.asv
 lib
+测试用例
