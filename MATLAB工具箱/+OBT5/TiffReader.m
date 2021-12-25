@@ -76,6 +76,7 @@ classdef TiffReader<handle
 			%% 名称值参数
 			%X, Y(1,1)uint16=0，指针要指向的XY位置
 			%I(1,1)uint32=0，指针要指向的IFD序号
+			%注意索引是从0开始，不同于MATLAB的一般索引规范
 			%% 返回值
 			%Pointer(1,1)uint64，指向指定像素位置的内存指针。此方法返回的像素指针指向只读内存段，请勿对其进行写入操作，可以用作OmeBigTiff5D.WritePixels5D的指针参数，实现直接拷贝。但因为标准Tiff的像素数据在IFD之间不是连续排列的，此方法不能可靠地连续拷贝多个IFD的像素值。
 			arguments

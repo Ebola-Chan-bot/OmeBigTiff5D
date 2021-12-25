@@ -65,7 +65,7 @@ classdef OmeTiffReader<OBT5.TiffReader
 			%根据指定的XYCZT范围读入像素值
 			%注意，读入的单帧图面维度顺序是XY，而imshow按照维度顺序YX显示图像，因此需要转置才能正确显示。
 			%% 名称值参数
-			%X, Y, C, Z, T(1,:)uint64，各维度的读入像素范围。默认依次读入该维度的全部。
+			%X, Y, C, Z, T(1,:)uint64，各维度的读入像素范围。默认依次读入该维度的全部。注意索引是从0开始，不同于MATLAB的一般索引规范
 			%ToPointer(1,1)uint64=0，如果设置非0值，将把像素数据拷入对应的内存指针位置，而不返回到MATLAB。例如可以从OmeBigTiff5D.PixelPointer5D返回一个内存指针。使用时请注意源文件和目标文件的维度顺序是否一致。
 			%% 返回值
 			%Pixels(:,:,:)，像素数据，维度顺序与DimensionOrder一致，数据类型与PixelType一致。如果指定了ToPointer参数，将不设置该返回值。
@@ -92,6 +92,7 @@ classdef OmeTiffReader<OBT5.TiffReader
 			%% 名称值参数
 			%X, Y, T(1,1)uint16=0，指针要指向的XYT
 			%C, Z(1,1)uint8=0，指针要指向的CZ位置
+			%注意索引是从0开始，不同于MATLAB的一般索引规范
 			%% 返回值
 			%Pointer(1,1)uint64，指向指定像素位置的内存指针。此方法返回的像素指针指向只读内存段，请勿对其进行写入操作，可以用作OmeBigTiff5D.WritePixels5D的指针参数，实现直接拷贝。但因为标准Tiff的像素数据在IFD之间不是连续排列的，此方法不能可靠地连续拷贝多个IFD的像素值。
 			arguments

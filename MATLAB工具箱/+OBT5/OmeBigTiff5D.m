@@ -167,7 +167,7 @@ classdef OmeBigTiff5D<OBT5.OmeTiffReader
 			% obj.ChannelColor(Colors); %设置所有通道的颜色
 			% obj.ChannelColor(Channel,Color); %设置指定通道的颜色
 			%% 可选参数
-			% Channel(1,1)uint8，要获取/指定哪个通道的颜色？
+			% Channel(1,1)uint8，要获取/指定哪个通道的颜色？注意索引是从0开始，不同于MATLAB的一般索引规范
 			% Colors(:,1)uint32，依次设置每个通道的颜色
 			% Color(1,1)uint32，要设置的单个通道的颜色
 			%% 返回值
@@ -184,7 +184,7 @@ classdef OmeBigTiff5D<OBT5.OmeTiffReader
 			% Pixels(:,:,:,:,:)，要写出的5D像素数据，维度顺序必须和目标文件的DimensionOrder一致。
 			% Pointer(1,1)uint64，从给定的内存指针读取要写出的数据，维度顺序必须和目标文件的DimensionOrder一致。如果指针来源于OmeBigTiff5D的PixelPointer3D或PixelPointer5D方法，可用于跨IFD拷贝。
 			%% 名称值参数
-			% X, Y, C, Z, T(1,:)uint64，各维度的写出像素范围。默认依次写满该维度。
+			% X, Y, C, Z, T(1,:)uint64，各维度的写出像素范围。默认依次写满该维度。注意索引是从0开始，不同于MATLAB的一般索引规范
 			arguments
 				obj(1,1)OBT5.OmeBigTiff5D
 				PixelPointer(:,:,:,:,:)
