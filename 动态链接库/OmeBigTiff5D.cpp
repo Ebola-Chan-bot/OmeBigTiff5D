@@ -347,7 +347,7 @@ void OmeBigTiff5D::已知IDDoc构造文件()
 	*当前标签 = Tag<UINT64>{ .Identifier = TagID::ResolutionUnit,.DataType = TagType::SHORT,.NoValues = 1,.SHORT值 = UINT16(ResolutionUnit::NoUnit) };
 	填充IFD(SizeI, IFD偏移对象, 基地址, true, SizePXY);
 }
-尝试结果 OmeBigTiff5D::覆盖创建(LPCWSTR 文件路径, UINT16 SizeX, UINT16 SizeY, UINT8 SizeC, UINT8 SizeZ, UINT16 SizeT, 维度顺序 DimensionOrder, 像素类型 PixelType)noexcept
+尝试结果 OmeBigTiff5D::覆盖创建(LPCWSTR 文件路径, UINT16 SizeX, UINT16 SizeY, UINT8 SizeC, UINT8 SizeZ, UINT16 SizeT, 维度顺序 DimensionOrder, 像素类型 PixelType,const 颜色* ChannelColors)noexcept
 {
 	File = CreateFileW(文件路径, GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
 	if (File == INVALID_HANDLE_VALUE)
@@ -377,6 +377,9 @@ void OmeBigTiff5D::已知IDDoc构造文件()
 		sprintf(ChannelID, 通道ID模板, C);
 		(iChannels[C] = Pixels.insert_copy_after(iChannels[C - 1], iChannels[C - 1])).attribute("ID").set_value(ChannelID);
 	}
+	if (ChannelColors)
+		for (UINT8 C = 0; C < SizeC; ++C)
+			iChannels[C].append_attribute("Color").set_value(ChannelColors[C].整数值);
 	子节点 = Pixels.child("TiffData").child("UUID");
 	子节点.append_attribute("FileName").set_value(窄文件名);
 	free(窄文件名);
@@ -425,11 +428,11 @@ void OmeBigTiff5D::IDDoc解析(const char* ImageDescription, const char* 新文�
 	已知IDDoc构造文件();
 	return 尝试结果{ .结果 = 结果分类::成功 };
 }
-bool OmeBigTiff5D::打开或创建(LPCWSTR 文件路径, UINT16 SizeX, UINT16 SizeY, UINT8 SizeC, UINT8 SizeZ, UINT16 SizeT, 维度顺序 DimensionOrder, 像素类型 PixelType)noexcept
+bool OmeBigTiff5D::打开或创建(LPCWSTR 文件路径, UINT16 SizeX, UINT16 SizeY, UINT8 SizeC, UINT8 SizeZ, UINT16 SizeT, 维度顺序 DimensionOrder, 像素类型 PixelType, const 颜色* ChannelColors)noexcept
 {
 	const bool 成功打开 = 尝试打开(文件路径).结果 == 结果分类::成功;
 	if (!成功打开)
-		覆盖创建(文件路径, SizeX, SizeY, SizeC, SizeZ, SizeT, DimensionOrder, PixelType);
+		覆盖创建(文件路径, SizeX, SizeY, SizeC, SizeZ, SizeT, DimensionOrder, PixelType, ChannelColors);
 	return 成功打开;
 }
 bool OmeBigTiff5D::打开或创建(LPCWSTR 文件路径, const char* ImageDescription)noexcept

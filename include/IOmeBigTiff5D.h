@@ -80,11 +80,11 @@ public:
 	//尝试打开现存的有效的文件。如果文件不存在或格式不正确，将返回false。
 	virtual 尝试结果 尝试打开(LPCWSTR 文件路径)noexcept = 0;
 	//尝试打开现存的有效的OmeBigTiff5D文件。如果文件不存在或格式不正确，将用输入参数覆盖创建新文件；否则指定的参数将被忽略。返回是否实施了打开而非创建
-	virtual bool 打开或创建(LPCWSTR 文件路径, UINT16 SizeX, UINT16 SizeY, UINT8 SizeC, UINT8 SizeZ, UINT16 SizeT, 维度顺序 DimensionOrder, 像素类型 PixelType)noexcept = 0;
+	virtual bool 打开或创建(LPCWSTR 文件路径, UINT16 SizeX, UINT16 SizeY, UINT8 SizeC, UINT8 SizeZ, UINT16 SizeT, 维度顺序 DimensionOrder, 像素类型 PixelType, const 颜色* ChannelColors = nullptr)noexcept = 0;
 	//尝试打开现存的有效的OmeBigTiff5D文件。如果文件不存在或格式不正确，将用输入参数覆盖创建新文件；否则指定的参数将被忽略。返回是否实施了打开而非创建。输入的ImageDescription参数应当具有0结尾
 	virtual bool 打开或创建(LPCWSTR 文件路径, const char* ImageDescription)noexcept = 0;
 	//无论目标文件是否存在，覆盖创建新文件。
-	virtual 尝试结果 覆盖创建(LPCWSTR 文件路径, UINT16 SizeX, UINT16 SizeY, UINT8 SizeC, UINT8 SizeZ, UINT16 SizeT, 维度顺序 DimensionOrder, 像素类型 PixelType)noexcept = 0;
+	virtual 尝试结果 覆盖创建(LPCWSTR 文件路径, UINT16 SizeX, UINT16 SizeY, UINT8 SizeC, UINT8 SizeZ, UINT16 SizeT, 维度顺序 DimensionOrder, 像素类型 PixelType, const 颜色* ChannelColors = nullptr)noexcept = 0;
 	//无论目标文件是否存在，覆盖创建新文件。输入的ImageDescription参数应当具有0结尾
 	virtual 尝试结果 覆盖创建(LPCWSTR 文件路径, const char* ImageDescription)noexcept = 0;
 };

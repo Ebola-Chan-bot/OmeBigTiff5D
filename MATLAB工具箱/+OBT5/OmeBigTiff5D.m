@@ -67,6 +67,7 @@ classdef OmeBigTiff5D<OBT5.OmeTiffReader
 			% SizeC, SizeZ(1,1)uint8=1，图像颜色通道数、层数
 			% DimensionOrder(1,1)OBT5.DimensionOrder=OBT5.DimensionOrder.XYCZT，维度顺序
 			% PixelType(1,1)OBT5.PixelType=OBT5.PixelType.UINT16，像素类型
+			% ChannelColors(:,1)uint32，各通道颜色，每个通道用一个uint32表示颜色，详见ChannelColor函数
 			%% 返回值
 			% obj(1,1)OBT5.OmeBigTiff5D
 			% Open(1,1)logical，使用OpenOrCreate时，返回逻辑值，指示图像是否被打开而非新建
@@ -81,10 +82,11 @@ classdef OmeBigTiff5D<OBT5.OmeTiffReader
 				options.SizeT(1,1)uint16=1
 				options.DimensionOrder(1,1)OBT5.DimensionOrder=OBT5.DimensionOrder.XYCZT
 				options.PixelType(1,1)OBT5.PixelType=OBT5.PixelType.UINT16
+				options.ChannelColors(:,1)uint32=[]
 			end
 			varargout=cell(1,(CD==OBT5.CreationDisposition.OpenOrCreate)+1);
 			if isempty(ImageDescription)
-				[varargout{:}]=MexInterface(uint8(OBT5.Internal.ApiCode.CreateOmeBigTiff5D),FilePath,uint8(CD),options.SizeX,options.SizeY,options.SizeC,options.SizeZ,options.SizeT,uint8(options.DimensionOrder),uint8(options.PixelType));
+				[varargout{:}]=MexInterface(uint8(OBT5.Internal.ApiCode.CreateOmeBigTiff5D),FilePath,uint8(CD),options.SizeX,options.SizeY,options.SizeC,options.SizeZ,options.SizeT,uint8(options.DimensionOrder),uint8(options.PixelType),options.ChannelColors);
 			else
 				[varargout{:}]=MexInterface(uint8(OBT5.Internal.ApiCode.CreateOmeBigTiff5D),FilePath,uint8(CD),ImageDescription);
 			end

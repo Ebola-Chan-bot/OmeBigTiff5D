@@ -422,6 +422,12 @@
 							],
 							"purpose": "图像像素类型",
 							"default": "OBT5.PixelType.UINT16"
+						},
+						{
+							"name":"ChannelColors",
+							"kind":"namevalue",
+							"type":["uint32","vector"],
+							"purpose":"各通道颜色，每个通道用一个uint32表示颜色"
 						}
 					]
 				]
