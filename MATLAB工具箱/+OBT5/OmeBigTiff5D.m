@@ -175,26 +175,45 @@ classdef OmeBigTiff5D<OBT5.OmeTiffReader
 			varargout=cell(1,nargout);
 			[varargout{:}]=MexInterface(uint8(OBT5.Internal.ApiCode.ChannelColor),obj.Pointer,varargin{:});
 		end
-		function WritePixels5D(obj,PixelPointer,options)
+		function WritePixels5D(obj,PixelPointer,varargin)
 			%向文件写出5D像素数据
 			%% 语法
-			% obj.WritePixels5D(Pixels,Name=Value);
-			% obj.WritePixels5D(Pointer,Name=Value);
-			%% 可选参数
-			% Pixels(:,:,:,:,:)，要写出的5D像素数据，维度顺序必须和目标文件的DimensionOrder一致。
-			% Pointer(1,1)uint64，从给定的内存指针读取要写出的数据，维度顺序必须和目标文件的DimensionOrder一致。如果指针来源于OmeBigTiff5D的PixelPointer3D或PixelPointer5D方法，可用于跨IFD拷贝。
-			%% 名称值参数
-			% X, Y, C, Z, T(1,:)uint64，各维度的写出像素范围。默认依次写满该维度。注意索引是从0开始，不同于MATLAB的一般索引规范
-			arguments
-				obj(1,1)OBT5.OmeBigTiff5D
-				PixelPointer(:,:,:,:,:)
-				options.X(1,:)uint64=uint64.empty
-				options.Y(1,:)uint64=uint64.empty
-				options.C(1,:)uint64=uint64.empty
-				options.Z(1,:)uint64=uint64.empty
-				options.T(1,:)uint64=uint64.empty
+			%以下涉及所有索引参数，均从0开始，而不同于MATLAB标准索引规范。
+
+			%# 写出与文件维度顺序相同的数组
+			%obj.WritePixels5D(Pixels[,XRange][,YRange][,Range3][,Range4][,Range5]);
+			%5个范围参数可选，且顺序与文件维度顺序一致。不指定范围或指定为[]，均表示顺序写满该维度。例如：
+			%obj.WritePixels5D(Pixels,0:511,511:-1:0,[]);
+			%上述代码写X轴0:511，Y轴反转，其它维度写满
+
+			%#写出与文件维度顺序不同的数组
+			%obj.WritePixels5D(Pixels,Dimension1=Range1,Dimension2=Range2,…);
+			%例如：
+			%obj.WritePixels5D(Pixels,C=0,Z=[],T=0:65535,Y=0:511,X=[]);
+			%上述代码指定Pixels的维度顺序为CZTYX，可以与文件不一致。
+
+			%#指定要写出的数据存储在特定内存指针位置
+			%obj.WritePixels5D(FromPointer[,XRange][,YRange][,Range3][,Range4][,Range5]);
+
+			%% 参数说明
+			%Pixels(:,:,:,:,:)，要写出的5D像素数据，数据类型必须与文件一致。
+			%XRange, YRange(1,:)uint16，要写出到的XY轴范围。向量长度必须与Pixels对应维度长度一致。
+			%Range3, Range4, Range5(1,:)uint16，要写出到的CZT轴范围。维度顺序与文件一致，向量长度与数组对应维度一致。
+			%Dimension1, Dimension2, …，可用的维度包括XYCZT。不同于一般的名称值参数，此处指定名称值参数的维度顺序规定了Pixels数组的维度顺序
+			%Range1, Range2, …(1,:)uint16，对应维度的写出范围，向量长度必须与数组对应维度一致。
+			%FromPointer(1,1)uint64，从给定的内存指针读取要写出的数据，维度顺序必须和目标文件的DimensionOrder一致。如果指针来源于OmeBigTiff5D的PixelPointer3D或PixelPointer5D方法，可用于跨IFD拷贝。
+			Ranges=cell(1,5);
+			if isnumeric(varargin{1})
+				Ranges(1:numel(varargin))=varargin;
+			else
+				DefinedDO=char(strcat(varargin{1:2:end}));
+				[~,ReorderIndex]=ismember(DefinedDO,'XYCZT');
+				Ranges(ReorderIndex)=varargin(2:2:end);
+				[~,ReorderIndex]=ismember(char(obj.DimensionOrder),DefinedDO);
+				PixelPointer=permute(PixelPointer,ReorderIndex);
 			end
-			MexInterface(uint8(OBT5.Internal.ApiCode.WritePixels5D),obj.Pointer,options.X,options.Y,options.C,options.Z,options.T,PixelPointer);
+			Ranges=cellfun(@uint64,Ranges,UniformOutput=false);
+			MexInterface(uint8(OBT5.Internal.ApiCode.WritePixels5D),obj.Pointer,Ranges{:},PixelPointer);
 		end
 		function ModifyMultiParameters(obj,options)
 			%一次性修改多个基本参数

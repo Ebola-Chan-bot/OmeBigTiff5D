@@ -28,6 +28,30 @@ classdef TiffReader<handle
 			obj=OBT5.TiffReader(CheckPos(MexInterface(uint8(OBT5.Internal.ApiCode.CreateTiffReader),FilePath,varargin{:})));
 		end
 	end
+	methods(Access=protected)
+		function Pixels=ReadPixels(obj,VAI,DimensionOrder,API)
+			if isa(VAI{1},'uint64')
+				ToPointer=VAI{1};
+				VAI(1)=[];
+			else
+				ToPointer=0;
+			end
+			Ranges=cell(1,numel(DimensionOrder));
+			if isnumeric(VAI{1})
+				Ranges(1:numel(VAI))=VAI;
+			else
+				[~,ReorderIndex]=ismember(char(strcat(VAI{1:2:end})),DimensionOrder);
+				Ranges(ReorderIndex)=VAI(2:2:end);
+			end
+			Ranges=cellfun(@uint64,Ranges,UniformOutput=false);
+			if ToPointer
+				MexInterface(uint8(API),obj.Pointer,Ranges{:},ToPointer);
+				Pixels=[];
+			else
+				Pixels=permute(MexInterface(uint8(API),obj.Pointer,Ranges{:}),[ReorderIndex setdiff(1:5,ReorderIndex)]);
+			end
+		end
+	end
 	methods
 		function delete(obj)
 			obj.ReleasePointer;
@@ -47,29 +71,6 @@ classdef TiffReader<handle
 		function Bytes=BytesPerSample(obj)
 			Bytes=MexInterface(uint8(OBT5.Internal.ApiCode.BytesPerSample),obj.Pointer);
 		end
-		function Pixels=ReadPixels3D(obj,options)
-			%根据指定的XYI范围读入像素值
-			%注意，读入的单帧图面维度顺序是XY，而imshow按照维度顺序YX显示图像，因此需要转置才能正确显示。
-			%% 名称值参数
-			%X, Y, I (1,:)uint64，各维度的读入像素范围。默认依次读入该维度的全部。注意索引是从0开始，不同于MATLAB的索引规范。
-			%ToPointer(1,1)uint64=0，如果设置非0值，将把像素数据拷入对应的内存指针位置，而不返回到MATLAB。例如可以从OmeBigTiff5D.PixelPointer5D返回一个内存指针。
-			%% 返回值
-			%Pixels(:,:,:)，像素数据，维度顺序XYI，数据类型与PixelType一致。如果指定了ToPointer参数，将不设置该返回值。
-			%% 用例
-			%Pixels=obj.ReadPixels3D(Y=511:-1:0,I=0:2:100); %读入上下翻转、偶数序号的IFD图像。
-			arguments
-				obj(1,1)OBT5.TiffReader
-				options.X(1,:)uint64=uint64.empty
-				options.Y(1,:)uint64=uint64.empty
-				options.I(1,:)uint64=uint64.empty
-				options.ToPointer(1,1)uint64=0
-			end
-			if options.ToPointer
-				MexInterface(uint8(OBT5.Internal.ApiCode.ReadPixels3D),obj.Pointer,options.X,options.Y,options.I,options.ToPointer);
-			else
-				Pixels=MexInterface(uint8(OBT5.Internal.ApiCode.ReadPixels3D),obj.Pointer,options.X,options.Y,options.I);
-			end
-		end
 		function Pointer=PixelPointer3D(obj,options)
 			%返回指定位置的只读像素指针
 			%不能使用此方法返回的指针进行跨IFD对拷。只有OBT5对象返回的指针才支持跨IFD对拷。
@@ -86,6 +87,33 @@ classdef TiffReader<handle
 				options.I(1,1)uint32=0
 			end
 			Pointer=MexInterface(uint8(OBT5.Internal.ApiCode.PixelPointer3D),obj.Pointer,options.X,options.Y,options.I);
+		end
+		function Pixels=ReadPixels3D(obj,varargin)
+			%根据指定的XYI范围读入像素值
+			%% 语法
+
+			%#像数组切片一样读入指定位置的像素值
+			%Pixels=obj.ReadPixels3D([XRange][,YRange][,IRange]);
+			%三个范围参数均可省略代表顺序读入该维度全长，或者用[]表示读入全长，例如
+			%Pixels=obj.ReadPixels3D([],0:99);
+			%上述代码读入X和I轴的全部以及Y轴的0~99。注意，不同于MATLAB标准索引方式，此处索引从0开始
+
+			%#像素值不返回MATLAB，而是直接写出到指定的内存指针。可与上述语法组合使用
+			%obj.ReadPixels3D(ToPointer,___);
+
+			%#按照指定的维度顺序和切片方式返回数组
+			%Pixels=obj.ReadPixels3D(Dimension1=Range1,Dimension2=Range2,…);
+			%例如：
+			%Pixels=obj.ReadPixels3D(I=[],X=10:-1:0);
+			%上述代码读入I和Y轴全部，X轴从10开始递减到0的反转，输出数组的维度顺序是IXY。使用该语法时，不支持写出到内存指针。
+			%% 参数说明
+			%Pixels(:,:,:)，返回的像素数组，数据类型与PixelType一致。
+			%XRange, YRange(1,:)uint16，XY像素值范围，用向量表示依次读入哪些位置。不指定或指定[]表示读入全部。
+			%IRange(1,:)uint32，I像素值范围，用向量表示依次读入哪些位置。不指定或指定[]表示读入全部。
+			%ToPointer(1,1)uint64，要写出到的内存指针，这个指针应当来自OmeBigTiff5D.PixelPointer5D函数。指定该参数时，将不返回Pixels。
+			%Dimension1, Dimension2, …，可用的维度包括X, Y, I。不同于一般的无序名称值参数，此处指定名称值参数的顺序将决定返回数组的维度顺序。
+			%Range1, Range2, …，对应维度的读入范围。可用[]表示读入该维度全部。
+			Pixels=obj.ReadPixels(varargin,'XYI',OBT5.Internal.ApiCode.ReadPixels3D);
 		end
 	end
 end

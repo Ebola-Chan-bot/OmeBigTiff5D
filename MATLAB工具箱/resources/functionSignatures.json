@@ -43,40 +43,104 @@
 				"purpose": "OBT5.TiffReader对象"
 			},
 			{
-				"name": "X",
-				"kind": "namevalue",
-				"type": [
-					"numeric",
-					"vector"
-				],
-				"purpose": "读入X像素范围"
-			},
-			{
-				"name": "Y",
-				"kind": "namevalue",
-				"type": [
-					"numeric",
-					"vector"
-				],
-				"purpose": "读入Y像素范围"
-			},
-			{
-				"name": "I",
-				"kind": "namevalue",
-				"type": [
-					"numeric",
-					"vector"
-				],
-				"purpose": "读入IFD范围"
-			},
-			{
-				"name": "ToPointer",
-				"kind": "namevalue",
-				"type": [
-					"uint64",
-					"scalar"
-				],
-				"purpose": "将把像素数据拷入对应的内存指针位置"
+				"mutuallyExclusiveGroup": [
+					[
+						{
+							"name": "XRange",
+							"kind": "ordered",
+							"type": [
+								"numeric",
+								"vector"
+							],
+							"purpose": "X轴读入范围"
+						},
+						{
+							"name": "YRange",
+							"kind": "ordered",
+							"type": [
+								"numeric",
+								"vector"
+							],
+							"purpose": "Y轴读入范围"
+						},
+						{
+							"name": "IRange",
+							"kind": "ordered",
+							"type": [
+								"numeric",
+								"vector"
+							],
+							"purpose": "I轴读入范围"
+						}
+					],
+					[
+						{
+							"name": "ToPointer",
+							"kind": "required",
+							"type": [
+								"scalar",
+								"uint64"
+							],
+							"purpose": "要写出到的内存指针"
+						},
+						{
+							"name": "XRange",
+							"kind": "ordered",
+							"type": [
+								"numeric",
+								"vector"
+							],
+							"purpose": "X轴读入范围"
+						},
+						{
+							"name": "YRange",
+							"kind": "ordered",
+							"type": [
+								"numeric",
+								"vector"
+							],
+							"purpose": "Y轴读入范围"
+						},
+						{
+							"name": "IRange",
+							"kind": "ordered",
+							"type": [
+								"numeric",
+								"vector"
+							],
+							"purpose": "I轴读入范围"
+						}
+					],
+					[
+						{
+							"name": "X",
+							"kind": "namevalue",
+							"type": [
+								"numeric",
+								"vector"
+							],
+							"purpose": "X轴读入范围"
+						},
+						{
+							"name": "Y",
+							"kind": "namevalue",
+							"type": [
+								"numeric",
+								"vector"
+							],
+							"purpose": "Y轴读入范围"
+						},
+						{
+							"name": "I",
+							"kind": "namevalue",
+							"type": [
+								"numeric",
+								"vector"
+							],
+							"purpose": "I轴读入范围"
+						}
+					]
+				]
 			}
 		]
 	},
@@ -189,58 +253,158 @@
 				"purpose": "OBT5.OmeTiffReader对象"
 			},
 			{
-				"name": "X",
-				"kind": "namevalue",
-				"type": [
-					"numeric",
-					"vector"
-				],
-				"purpose": "读入X像素范围"
-			},
-			{
-				"name": "Y",
-				"kind": "namevalue",
-				"type": [
-					"numeric",
-					"vector"
-				],
-				"purpose": "读入Y像素范围"
-			},
-			{
-				"name": "C",
-				"kind": "namevalue",
-				"type": [
-					"numeric",
-					"vector"
-				],
-				"purpose": "读入C像素范围"
-			},
-			{
-				"name": "Z",
-				"kind": "namevalue",
-				"type": [
-					"numeric",
-					"vector"
-				],
-				"purpose": "读入Z像素范围"
-			},
-			{
-				"name": "T",
-				"kind": "namevalue",
-				"type": [
-					"numeric",
-					"vector"
-				],
-				"purpose": "读入T像素范围"
-			},
-			{
-				"name": "ToPointer",
-				"kind": "namevalue",
-				"type": [
-					"uint64",
-					"scalar"
-				],
-				"purpose": "将把像素数据拷入对应的内存指针位置"
+				"mutuallyExclusiveGroup": [
+					[
+						{
+							"name": "XRange",
+							"kind": "ordered",
+							"type": [
+								"numeric",
+								"vector"
+							],
+							"purpose": "X轴读入范围"
+						},
+						{
+							"name": "YRange",
+							"kind": "ordered",
+							"type": [
+								"numeric",
+								"vector"
+							],
+							"purpose": "Y轴读入范围"
+						},
+						{
+							"name": "Range3",
+							"kind": "ordered",
+							"type": [
+								"numeric",
+								"vector"
+							],
+							"purpose": "维度3读入范围"
+						},
+						{
+							"name": "Range4",
+							"kind": "ordered",
+							"type": [
+								"numeric",
+								"vector"
+							],
+							"purpose": "维度4读入范围"
+						},
+						{
+							"name": "Range5",
+							"kind": "ordered",
+							"type": [
+								"numeric",
+								"vector"
+							],
+							"purpose": "维度5读入范围"
+						}
+					],
+					[
+						{
+							"name": "ToPointer",
+							"kind": "required",
+							"type": [
+								"scalar",
+								"uint64"
+							],
+							"purpose": "要写出到的内存指针"
+						},
+						{
+							"name": "XRange",
+							"kind": "ordered",
+							"type": [
+								"numeric",
+								"vector"
+							],
+							"purpose": "X轴读入范围"
+						},
+						{
+							"name": "YRange",
+							"kind": "ordered",
+							"type": [
+								"numeric",
+								"vector"
+							],
+							"purpose": "Y轴读入范围"
+						},
+						{
+							"name": "Range3",
+							"kind": "ordered",
+							"type": [
+								"numeric",
+								"vector"
+							],
+							"purpose": "维度3读入范围"
+						},
+						{
+							"name": "Range4",
+							"kind": "ordered",
+							"type": [
+								"numeric",
+								"vector"
+							],
+							"purpose": "维度4读入范围"
+						},
+						{
+							"name": "Range5",
+							"kind": "ordered",
+							"type": [
+								"numeric",
+								"vector"
+							],
+							"purpose": "维度5读入范围"
+						}
+					],
+					[
+						{
+							"name": "X",
+							"kind": "namevalue",
+							"type": [
+								"numeric",
+								"vector"
+							],
+							"purpose": "X轴读入范围"
+						},
+						{
+							"name": "Y",
+							"kind": "namevalue",
+							"type": [
+								"numeric",
+								"vector"
+							],
+							"purpose": "Y轴读入范围"
+						},
+						{
+							"name": "C",
+							"kind": "namevalue",
+							"type": [
+								"numeric",
+								"vector"
+							],
+							"purpose": "C轴读入范围"
+						},
+						{
+							"name": "Z",
+							"kind": "namevalue",
+							"type": [
+								"numeric",
+								"vector"
+							],
+							"purpose": "Z轴读入范围"
+						},
+						{
+							"name": "T",
+							"kind": "namevalue",
+							"type": [
+								"numeric",
+								"vector"
+							],
+							"purpose": "T轴读入范围"
+						}
+					]
+				]
 			}
 		]
 	},
@@ -424,10 +588,13 @@
 							"default": "OBT5.PixelType.UINT16"
 						},
 						{
-							"name":"ChannelColors",
-							"kind":"namevalue",
-							"type":["uint32","vector"],
-							"purpose":"各通道颜色，每个通道用一个uint32表示颜色"
+							"name": "ChannelColors",
+							"kind": "namevalue",
+							"type": [
+								"uint32",
+								"vector"
+							],
+							"purpose": "各通道颜色，每个通道用一个uint32表示颜色"
 						}
 					]
 				]
@@ -515,6 +682,104 @@
 								"size=:,:,:,:,:"
 							],
 							"purpose": "要写出的5D像素数据"
+						},
+						{
+							"mutuallyExclusiveGroup": [
+								[
+									{
+										"name": "X",
+										"kind": "namevalue",
+										"type": [
+											"numeric",
+											"vector"
+										],
+										"purpose": "写出X像素范围"
+									},
+									{
+										"name": "Y",
+										"kind": "namevalue",
+										"type": [
+											"numeric",
+											"vector"
+										],
+										"purpose": "写出Y像素范围"
+									},
+									{
+										"name": "C",
+										"kind": "namevalue",
+										"type": [
+											"numeric",
+											"vector"
+										],
+										"purpose": "写出C像素范围"
+									},
+									{
+										"name": "Z",
+										"kind": "namevalue",
+										"type": [
+											"numeric",
+											"vector"
+										],
+										"purpose": "写出Z像素范围"
+									},
+									{
+										"name": "T",
+										"kind": "namevalue",
+										"type": [
+											"numeric",
+											"vector"
+										],
+										"purpose": "写出T像素范围"
+									}
+								],
+								[
+									{
+										"name": "XRange",
+										"kind": "ordered",
+										"type": [
+											"numeric",
+											"vector"
+										],
+										"purpose": "X轴写出范围"
+									},
+									{
+										"name": "YRange",
+										"kind": "ordered",
+										"type": [
+											"numeric",
+											"vector"
+										],
+										"purpose": "Y轴写出范围"
+									},
+									{
+										"name": "Range3",
+										"kind": "ordered",
+										"type": [
+											"numeric",
+											"vector"
+										],
+										"purpose": "维度3写出范围"
+									},
+									{
+										"name": "Range4",
+										"kind": "ordered",
+										"type": [
+											"numeric",
+											"vector"
+										],
+										"purpose": "维度4写出范围"
+									},
+									{
+										"name": "Range5",
+										"kind": "ordered",
+										"type": [
+											"numeric",
+											"vector"
+										],
+										"purpose": "维度5写出范围"
+									}
+								]
+							]
 						}
 					],
 					[
@@ -526,54 +791,54 @@
 								"scalar"
 							],
 							"purpose": "从给定的内存指针读取要写出的数据"
+						},
+						{
+							"name": "XRange",
+							"kind": "ordered",
+							"type": [
+								"numeric",
+								"vector"
+							],
+							"purpose": "X轴写出范围"
+						},
+						{
+							"name": "YRange",
+							"kind": "ordered",
+							"type": [
+								"numeric",
+								"vector"
+							],
+							"purpose": "Y轴写出范围"
+						},
+						{
+							"name": "Range3",
+							"kind": "ordered",
+							"type": [
+								"numeric",
+								"vector"
+							],
+							"purpose": "维度3写出范围"
+						},
+						{
+							"name": "Range4",
+							"kind": "ordered",
+							"type": [
+								"numeric",
+								"vector"
+							],
+							"purpose": "维度4写出范围"
+						},
+						{
+							"name": "Range5",
+							"kind": "ordered",
+							"type": [
+								"numeric",
+								"vector"
+							],
+							"purpose": "维度5写出范围"
 						}
 					]
 				]
-			},
-			{
-				"name": "X",
-				"kind": "namevalue",
-				"type": [
-					"numeric",
-					"vector"
-				],
-				"purpose": "写出X像素范围"
-			},
-			{
-				"name": "Y",
-				"kind": "namevalue",
-				"type": [
-					"numeric",
-					"vector"
-				],
-				"purpose": "写出Y像素范围"
-			},
-			{
-				"name": "C",
-				"kind": "namevalue",
-				"type": [
-					"numeric",
-					"vector"
-				],
-				"purpose": "写出C像素范围"
-			},
-			{
-				"name": "Z",
-				"kind": "namevalue",
-				"type": [
-					"numeric",
-					"vector"
-				],
-				"purpose": "写出Z像素范围"
-			},
-			{
-				"name": "T",
-				"kind": "namevalue",
-				"type": [
-					"numeric",
-					"vector"
-				],
-				"purpose": "写出T像素范围"
 			}
 		]
 	},

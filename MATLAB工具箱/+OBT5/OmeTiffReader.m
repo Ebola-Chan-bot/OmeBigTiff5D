@@ -61,30 +61,31 @@ classdef OmeTiffReader<OBT5.TiffReader
 			% Color(:,1)uint32，如果指定了Channel参数则为标量，表示指定通道的颜色；否则为列向量，依次排列所有通道的颜色。
 			Color=MexInterface(uint8(OBT5.Internal.ApiCode.ChannelColor),obj.Pointer,varargin{:});
 		end
-		function Pixels=ReadPixels5D(obj,options)
+		function Pixels=ReadPixels5D(obj,varargin)
 			%根据指定的XYCZT范围读入像素值
-			%注意，读入的单帧图面维度顺序是XY，而imshow按照维度顺序YX显示图像，因此需要转置才能正确显示。
-			%% 名称值参数
-			%X, Y, C, Z, T(1,:)uint64，各维度的读入像素范围。默认依次读入该维度的全部。注意索引是从0开始，不同于MATLAB的一般索引规范
-			%ToPointer(1,1)uint64=0，如果设置非0值，将把像素数据拷入对应的内存指针位置，而不返回到MATLAB。例如可以从OmeBigTiff5D.PixelPointer5D返回一个内存指针。使用时请注意源文件和目标文件的维度顺序是否一致。
-			%% 返回值
-			%Pixels(:,:,:)，像素数据，维度顺序与DimensionOrder一致，数据类型与PixelType一致。如果指定了ToPointer参数，将不设置该返回值。
-			%% 用例
-			%Pixels=obj.ReadPixels5D(T=1000:-1:0,Z=0); %读入第0层、时间反演的像素数据并返回给MATLAB
-			arguments
-				obj(1,1)OBT5.OmeTiffReader
-				options.X(1,:)uint64=uint64.empty
-				options.Y(1,:)uint64=uint64.empty
-				options.C(1,:)uint64=uint64.empty
-				options.Z(1,:)uint64=uint64.empty
-				options.T(1,:)uint64=uint64.empty
-				options.ToPointer(1,1)uint64=0
-			end
-			if options.ToPointer
-				MexInterface(uint8(OBT5.Internal.ApiCode.ReadPixels5D),obj.Pointer,options.X,options.Y,options.C,options.Z,options.T,options.ToPointer);
-			else
-				Pixels=MexInterface(uint8(OBT5.Internal.ApiCode.ReadPixels3D),obj.Pointer,options.X,options.Y,options.C,options.Z,options.T);
-			end
+			%% 语法
+
+			%#像数组切片一样读入指定位置的像素值
+			%Pixels=obj.ReadPixels3D([XRange][,YRange][,Range3][,Range4][,Range5]);
+			%5个范围参数均可省略代表顺序读入该维度全长，或者用[]表示读入全长，例如
+			%Pixels=obj.ReadPixels3D([],0:99,1:2:100,100:-2:0);
+
+			%#像素值不返回MATLAB，而是直接写出到指定的内存指针。可与上述语法组合使用
+			%obj.ReadPixels3D(ToPointer,___);
+
+			%#按照指定的维度顺序和切片方式返回数组
+			%Pixels=obj.ReadPixels3D(Dimension1=Range1,Dimension2=Range2,…);
+			%例如：
+			%Pixels=obj.ReadPixels3D(T=[],X=10:-1:0,Z=0:1,C=[]);
+			%上述代码读入T和C轴全部，X轴从10开始递减到0的反转，Z轴读入0:1，Y轴读入全部，输出数组的维度顺序是TXZCY。使用该语法时，不支持写出到内存指针。
+			%% 参数说明
+			%Pixels(:,:,:)，返回的像素数组，数据类型与PixelType一致。
+			%XRange, YRange(1,:)uint16，XY像素值范围，用向量表示依次读入哪些位置。不指定或指定[]表示读入全部。
+			%Range3, Range4, Range5(1,:)uint16，CZT像素值范围，用向量表示依次读入哪些位置。不指定或指定[]表示读入全部。3、4、5对应的CZT顺序取决于文件本身的DimensionOrder。
+			%ToPointer(1,1)uint64，要写出到的内存指针，这个指针应当来自OmeBigTiff5D.PixelPointer5D函数。指定该参数时，将不返回Pixels。
+			%Dimension1, Dimension2, …，可用的维度包括XYCZT。不同于一般的无序名称值参数，此处指定名称值参数的顺序将决定返回数组的维度顺序。
+			%Range1, Range2, …，对应维度的读入范围。可用[]表示读入该维度全部。
+			Pixels=obj.ReadPixels(varargin,'XYCZT',OBT5.Internal.ApiCode.ReadPixels5D);
 		end
 		function Pointer=PixelPointer5D(obj,options)
 			%返回指定位置的只读像素指针
