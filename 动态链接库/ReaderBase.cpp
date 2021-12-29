@@ -3,7 +3,7 @@
 #include "是否间断.h"
 #include <algorithm>
 #include "N维切片参数.h"
-#include "Win32异常.h"
+#include "尝试结果.h"
 ReaderBase::~ReaderBase()noexcept
 {
 	UnmapViewOfFile(基地址);
@@ -12,20 +12,14 @@ void ReaderBase::加载文件(HANDLE 文件句柄)
 {
 	File = 文件句柄;
 	FileMappingObject = CreateFileMappingW(文件句柄, NULL, PAGE_READONLY, 0, 0, NULL);
-	基地址 = (char*)MapViewOfFile(FileMappingObject, FILE_MAP_READ, 0, 0, 0);
-}
-void ReaderBase::尝试加载(HANDLE 文件句柄)
-{
-	File = 文件句柄;
-	FileMappingObject = CreateFileMappingW(文件句柄, NULL, PAGE_READONLY, 0, 0, NULL);
-	if (!FileMappingObject)
-		throw Win32异常(GetLastError(), "创建文件映射出错");
+	if (FileMappingObject == INVALID_HANDLE_VALUE)
+		throw 尝试结果{ .结果 = 结果分类::Win32异常,.错误代码 = GetLastError(),.错误消息 = "建立文件映射失败" };
 	基地址 = (char*)MapViewOfFile(FileMappingObject, FILE_MAP_READ, 0, 0, 0);
 	if (!基地址)
-		throw Win32异常(GetLastError(), "文件映射视图出错");
+		throw 尝试结果{ .结果 = 结果分类::Win32异常,.错误代码 = GetLastError(),.错误消息 = "文件映射视图出错" };
 }
 template <NumberType Word, NumberType DWord>
-BYTE* ReaderBase::读像素指针(IFD偏移<Word, DWord>& 当前IFD偏移)
+const BYTE* ReaderBase::读像素指针(IFD偏移<Word, DWord>& 当前IFD偏移)const
 {
 	const IFD指针<Word, DWord> 当前IFD指针 = 当前IFD偏移.取指针(基地址);
 	Tag<DWord>* 当前标签 = 当前IFD指针.Tags();
@@ -39,9 +33,9 @@ BYTE* ReaderBase::读像素指针(IFD偏移<Word, DWord>& 当前IFD偏移)
 			当前标签++;
 	}
 }
-template BYTE* ReaderBase::读像素指针<UINT16, UINT32>(IFD偏移<UINT16, UINT32>& 当前IFD偏移);
-template BYTE* ReaderBase::读像素指针<UINT64, UINT64>(IFD偏移<UINT64, UINT64>& 当前IFD偏移);
-void ReaderBase::Read3DBase(UINT16 XSize, UINT16 YSize, UINT32 ISize, UINT64* XRange, UINT64* YRange, const UINT64* IRange, BYTE* BytesOut)
+template const BYTE* ReaderBase::读像素指针<UINT16, UINT32>(IFD偏移<UINT16, UINT32>& 当前IFD偏移)const;
+template const BYTE* ReaderBase::读像素指针<UINT64, UINT64>(IFD偏移<UINT64, UINT64>& 当前IFD偏移)const;
+void ReaderBase::Read3DBase(UINT16 XSize, UINT16 YSize, UINT32 ISize, UINT64* XRange, UINT64* YRange, UINT64* IRange, BYTE* BytesOut)
 {
 	UINT32 IStart, IEnd;
 	if (IRange)
@@ -66,7 +60,7 @@ void ReaderBase::Read3DBase(UINT16 XSize, UINT16 YSize, UINT32 ISize, UINT64* XR
 	UINT32 各维尺寸[] = { iSizeX,iSizeY };
 	UINT32 下标长度[] = { XSize,YSize };
 	UINT64* 下标[] = { XRange,YRange };
-	N维切片参数(iBytesPerSample, 2, 各维尺寸, 下标长度, 下标, 偏移, 段长度);
+	N维切片参数(iSizeP, 2, 各维尺寸, 下标长度, 下标, 偏移, 段长度);
 	const BYTE* 像素指针;
 	const BYTE* const* IFD像素指针 = GetIFD像素指针();
 	//BYTE* 缓存 = (BYTE*)malloc(段长度);

@@ -13,7 +13,6 @@
 #include <vector>
 #include "XML文本接收器.h"
 #include "N维切片.h"
-#include "CZT重排.h"
 #include "resource.h"
 #include "模块句柄.h"
 constexpr UINT8 基本标签个数 = 11;
@@ -62,21 +61,26 @@ void OmeBigTiff5D::Pixels节点缓存()
 	xml_object_range<xml_named_node_iterator> 通道节点迭代器 = Pixels.children("Channel");
 	std::copy(通道节点迭代器.begin(), 通道节点迭代器.end(), iChannels);
 }
-void OmeBigTiff5D::打开现存(LPCWSTR 文件路径)noexcept
+void OmeBigTiff5D::生成各维尺寸()
 {
-	File = CreateFileW(文件路径, GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
-	建立映射();
-	FirstTags = 文件头->FirstIFD.取指针(基地址).Tags();
-	const UINT64 NoValues = FirstTags->NoValues;
-	//5D规范要求这里的图像描述区必须以0结尾，且第一个标签就是图像描述
-	IDDoc.load_buffer(FirstTags->ASCII偏移.取指针(基地址), NoValues);
-	xml_node 节点 = IDDoc.child("OME");
-	唯一标识符 = 节点.attribute("UUID");
-	文件名 = (节点 = 节点.child("Image")).attribute("Name");
-	Pixels =节点.child("Pixels");
-	Pixels节点缓存();
+	i各维尺寸[0] = SizeX();
+	i各维尺寸[1] = SizeY();
+	const char* const DO = iDimensionOrder.value();
+	for (UINT8 D = 2; D < 5; ++D)
+		switch (DO[D])
+		{
+		case 'C':
+			i各维尺寸[D] = SizeC();
+			break;
+		case 'Z':
+			i各维尺寸[D] = SizeZ();
+			break;
+		case 'T':
+			i各维尺寸[D] = SizeT();
+			break;
+		}
 }
-尝试结果 OmeBigTiff5D::尝试打开(LPCWSTR 文件路径)noexcept
+尝试结果 OmeBigTiff5D::打开现存(LPCWSTR 文件路径)noexcept
 {
 	File = CreateFileW(文件路径, GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
 	if (File == INVALID_HANDLE_VALUE)
@@ -166,6 +170,7 @@ void OmeBigTiff5D::打开现存(LPCWSTR 文件路径)noexcept
 		失败清理();
 		return 尝试结果{ .结果 = 结果分类::Tiff异常,.异常类型 = Tiff异常类型::OME规范,.错误消息 = "Pixels节点缺少DimensionOrder属性" };
 	}
+	生成各维尺寸();
 	if (!(iPixelType = Pixels.attribute("Type")))
 	{
 		失败清理();
@@ -182,7 +187,7 @@ void OmeBigTiff5D::打开现存(LPCWSTR 文件路径)noexcept
 	}
 	iChannels = (xml_node*)malloc(sizeof(xml_node) * SizeC);
 	copy(ChannelBuffer.cbegin(), ChannelBuffer.cend(), iChannels);
-	const UINT64 最小文件尺寸 = FirstTags[1].LONG8值 + UINT64(SizeX()) * SizeY() * SizeC * SizeZ() * SizeT() * BytesPerSample();
+	const UINT64 最小文件尺寸 = FirstTags[1].LONG8值 + UINT64(SizeX()) * SizeY() * SizeC * SizeZ() * SizeT() * SizeP();
 	if (文件尺寸.QuadPart< 最小文件尺寸)//可以尝试修复的错误
 	{
 		文件尺寸.QuadPart = 最小文件尺寸;
@@ -312,18 +317,19 @@ char* 取文件名(LPCWSTR 文件路径)
 }
 void OmeBigTiff5D::已知IDDoc构造文件()
 {
+	生成各维尺寸();
 	XML文本接收器 接收器;
 	IDDoc.save(接收器);
 	const std::string& 图像描述 = 接收器.缓存;
 	const UINT32 图像描述字节数 = 图像描述.length() + 1;
 	IFD偏移<UINT64, UINT64> IFD偏移对象(图像描述字节数 * 2 + sizeof(OmeBigTiff5D文件头));
-	const UINT32 SizeI = OmeBigTiff5D::SizeI常();
+	const UINT32 SizeI = OmeBigTiff5D::SizeI();
 	const UINT64 像素偏移 = IFD偏移对象 + (SizeI * 基本IFD尺寸 + sizeof(Tag<UINT64>)) * 2;
-	const UINT8 SizeP = BytesPerSample();
+	const UINT8 SizeP = OmeBigTiff5D::SizeP();
 	const UINT16 SizeX = OmeBigTiff5D::SizeX();
 	const UINT16 SizeY = OmeBigTiff5D::SizeY();
 	const UINT32 SizePXY = UINT32(SizeX) * SizeY * SizeP;
-	SetFilePointerEx(File, LARGE_INTEGER{ .QuadPart = INT64(像素偏移 + SizePXY * SizeI) }, NULL, FILE_BEGIN);
+	SetFilePointerEx(File, LARGE_INTEGER{ .QuadPart = INT64(像素偏移 + UINT64(SizePXY) * SizeI) }, NULL, FILE_BEGIN);
 	SetEndOfFile(File);
 	建立映射();
 	(*文件头 = OmeBigTiff5D文件头()).FirstIFD = IFD偏移对象;
@@ -428,19 +434,15 @@ void OmeBigTiff5D::IDDoc解析(const char* ImageDescription, const char* 新文�
 	已知IDDoc构造文件();
 	return 尝试结果{ .结果 = 结果分类::成功 };
 }
-bool OmeBigTiff5D::打开或创建(LPCWSTR 文件路径, UINT16 SizeX, UINT16 SizeY, UINT8 SizeC, UINT8 SizeZ, UINT16 SizeT, 维度顺序 DimensionOrder, 像素类型 PixelType, const 颜色* ChannelColors)noexcept
+尝试结果 OmeBigTiff5D::打开或创建(LPCWSTR 文件路径, UINT16 SizeX, UINT16 SizeY, UINT8 SizeC, UINT8 SizeZ, UINT16 SizeT, 维度顺序 DimensionOrder, 像素类型 PixelType, const 颜色* ChannelColors, bool& 成功打开)noexcept
 {
-	const bool 成功打开 = 尝试打开(文件路径).结果 == 结果分类::成功;
-	if (!成功打开)
-		覆盖创建(文件路径, SizeX, SizeY, SizeC, SizeZ, SizeT, DimensionOrder, PixelType, ChannelColors);
-	return 成功打开;
+	尝试结果 结果 = 打开现存(文件路径);
+	return (成功打开 = 结果.结果 == 结果分类::成功) ? std::move(结果) : 覆盖创建(文件路径, SizeX, SizeY, SizeC, SizeZ, SizeT, DimensionOrder, PixelType, ChannelColors);
 }
-bool OmeBigTiff5D::打开或创建(LPCWSTR 文件路径, const char* ImageDescription)noexcept
+尝试结果 OmeBigTiff5D::打开或创建(LPCWSTR 文件路径, const char* ImageDescription, bool& 成功打开)noexcept
 {
-	const bool 成功打开 = 尝试打开(文件路径).结果 == 结果分类::成功;
-	if (!成功打开)
-		覆盖创建(文件路径, ImageDescription);
-	return 成功打开;
+	尝试结果 结果 = 打开现存(文件路径);
+	return (成功打开 = 结果.结果 == 结果分类::成功) ? std::move(结果) : 覆盖创建(文件路径, ImageDescription);
 }
 UINT16 OmeBigTiff5D::SizeX()const noexcept
 {
@@ -462,13 +464,9 @@ UINT16 OmeBigTiff5D::SizeT()const noexcept
 {
 	return iSizeT.as_uint();
 }
-UINT32 OmeBigTiff5D::SizeI常()const noexcept
+UINT32 OmeBigTiff5D::SizeI()noexcept
 {
 	return UINT32(SizeC()) * SizeZ() * SizeT();
-}
-UINT32 OmeBigTiff5D::SizeI() noexcept
-{
-	return SizeI常();
 }
 维度顺序 OmeBigTiff5D::DimensionOrder()const noexcept
 {
@@ -481,13 +479,13 @@ UINT32 OmeBigTiff5D::SizeI() noexcept
 颜色 OmeBigTiff5D::读ChannelColor(UINT8 C)const noexcept
 {
 	const xml_attribute 颜色属性 = iChannels[C].attribute("Color");
-	return 颜色{ .整数值 = 颜色属性 ? 颜色属性.as_uint() : -1 };
+	return 颜色{ .整数值 = 颜色属性 ? 颜色属性.as_int() : -1 };
 }
 void OmeBigTiff5D::读ChannelColor(颜色* Colors)const noexcept
 {
 	xml_attribute 颜色属性;
 	for (UINT8 C = 0; C < SizeC(); ++C)
-		Colors[C] = 颜色{ .整数值 = (颜色属性 = iChannels[C].attribute("Color")) ? 颜色属性.as_uint() : -1 };
+		Colors[C] = 颜色{ .整数值 = (颜色属性 = iChannels[C].attribute("Color")) ? 颜色属性.as_int() : -1 };
 }
 const char* OmeBigTiff5D::ImageDescription()const noexcept
 {
@@ -497,7 +495,7 @@ const char* OmeBigTiff5D::FileName()const noexcept
 {
 	return 文件名.value();
 }
-UINT8 OmeBigTiff5D::BytesPerSample()const noexcept
+UINT8 OmeBigTiff5D::SizeP()const noexcept
 {
 	return 像素类型尺寸[寻找字符串(iPixelType.value(), 像素类型字符串, 像素类型个数)];
 }
@@ -505,42 +503,32 @@ BYTE* OmeBigTiff5D::像素指针()const
 {
 	return FirstTags[1].BYTE偏移.取指针(基地址);
 }
-void OmeBigTiff5D::读入像素常(UINT16 XSize, UINT16 YSize, UINT32 ISize, UINT64* XRange, UINT64* YRange, UINT64* IRange, BYTE* BytesOut)const noexcept
+void OmeBigTiff5D::读入像素3D(UINT16 XSize, UINT16 YSize, UINT32 ISize, UINT64* XRange, UINT64* YRange, UINT64* IRange, BYTE* BytesOut)noexcept
 {
-	UINT32 各维尺寸[] = { SizeX(),SizeY(),SizeI常() };
+	UINT32 各维尺寸[] = { SizeX(),SizeY(),SizeI() };
 	UINT32 下标长度[] = { XSize,YSize,ISize };
 	UINT64* 下标[] = { XRange,YRange,IRange };
-	N维切片(BytesPerSample(), 3, 各维尺寸, 下标长度, 下标, 像素指针(), BytesOut, true);
+	N维切片(SizeP(), 3, 各维尺寸, 下标长度, 下标, 像素指针(), BytesOut, true);
 }
-void OmeBigTiff5D::读入像素3D(UINT16 XSize, UINT16 YSize, UINT32 ISize, UINT64* XRange, UINT64* YRange, UINT64* IRange, BYTE* BytesOut) noexcept
+void OmeBigTiff5D::读入像素5D(UINT16 XSize, UINT16 YSize, UINT16 Size2, UINT16 Size3, UINT16 Size4, UINT64* XRange, UINT64* YRange, UINT64* Range2, UINT64* Range3, UINT64* Range4, BYTE* BytesOut)noexcept
 {
-	读入像素常(XSize, YSize, ISize, XRange, YRange, IRange, BytesOut);
+	UINT32 下标长度[5] = { XSize,YSize,Size2,Size3,Size4 };
+	UINT64* 下标[5] = { XRange,YRange,Range2,Range3,Range4 };
+	N维切片(SizeP(), 5, i各维尺寸, 下标长度, 下标, 像素指针(), BytesOut, true);
 }
-void OmeBigTiff5D::读入像素常(UINT16 XSize, UINT16 YSize, UINT8 CSize, UINT8 ZSize, UINT16 TSize, UINT64* XRange, UINT64* YRange, UINT64* CRange, UINT64* ZRange, UINT64* TRange, BYTE* BytesOut)const noexcept
+void OmeBigTiff5D::写出像素(UINT16 XSize, UINT16 YSize, UINT16 Size2, UINT16 Size3, UINT16 Size4, UINT64* XRange, UINT64* YRange, UINT64* Range2, UINT64* Range3, UINT64* Range4,const BYTE* BytesIn)noexcept
 {
-	UINT32 各维尺寸[5] = { SizeX(),SizeY()};
-	UINT32 下标长度[5] = { XSize,YSize };
-	UINT64* 下标[5] = { XRange,YRange };
-	const UINT16 CZTSize[] = {CSize,ZSize,TSize};
-	UINT64* CZTRange[] = { CRange,ZRange,TRange };
-	const UINT16 SizeCZT[] = { SizeC(),SizeZ(),SizeT() };
-	CZT重排(各维尺寸 + 2, 下标长度 + 2, 下标 + 2, CZTSize, CZTRange, SizeCZT, iDimensionOrder.value() + 2);
-	N维切片(BytesPerSample(), 3, 各维尺寸, 下标长度, 下标, 像素指针(), BytesOut, true);
-}
-void OmeBigTiff5D::读入像素5D(UINT16 XSize, UINT16 YSize, UINT8 CSize, UINT8 ZSize, UINT16 TSize, UINT64* XRange, UINT64* YRange, UINT64* CRange, UINT64* ZRange, UINT64* TRange, BYTE* BytesOut) noexcept
-{
-	读入像素常(XSize, YSize, CSize, ZSize, TSize, XRange, YRange, CRange, ZRange, TRange, BytesOut);
-}
-void OmeBigTiff5D::写出像素(UINT16 XSize, UINT16 YSize, UINT8 CSize, UINT8 ZSize, UINT16 TSize, UINT64* XRange, UINT64* YRange, UINT64* CRange, UINT64* ZRange, UINT64* TRange, const BYTE* BytesIn)const noexcept
-{
-	UINT32 各维尺寸[5] = { SizeX(),SizeY() };
-	UINT32 下标长度[5] = { XSize,YSize };
-	UINT64* 下标[5] = { XRange,YRange };
-	const UINT16 CZTSize[] = { CSize,ZSize,TSize };
-	UINT64* CZTRange[] = { CRange,ZRange,TRange };
-	const UINT16 SizeCZT[] = { SizeC(),SizeZ(),SizeT() };
-	CZT重排(各维尺寸 + 2, 下标长度 + 2, 下标 + 2, CZTSize, CZTRange, SizeCZT, iDimensionOrder.value() + 2);
-	N维切片(BytesPerSample(), 3, 各维尺寸, 下标长度, 下标, BytesIn, 像素指针(), false);
+	UINT32 下标长度[5] = { XSize,YSize,Size2,Size3,Size4 };
+	UINT64* 下标[5] = { XRange,YRange,Range2,Range3,Range4 };
+#ifdef _DEBUG
+	BYTE* Pointer = 像素指针();
+	LARGE_INTEGER 文件长度{ .QuadPart = 0 };
+	SetFilePointerEx(File, 文件长度, &文件长度, FILE_END);
+	char* 尾指针 = 基地址 + 文件长度.QuadPart;
+	N维切片(SizeP(), 5, i各维尺寸, 下标长度, 下标, BytesIn, Pointer, false);
+#else
+	N维切片(SizeP(), 5, i各维尺寸, 下标长度, 下标, BytesIn, 像素指针(), false);
+#endif
 }
 bool OmeBigTiff5D::更新图像描述并扩展文件(bool 必须重新生成,UINT32& SizeI, UINT32& SizePXY)
 {
@@ -549,7 +537,7 @@ bool OmeBigTiff5D::更新图像描述并扩展文件(bool 必须重新生成,UIN
 	const std::string& 图像描述 = 接收器.缓存;
 	const UINT32 图像描述字节数 = 图像描述.length() + 1;
 	SizeI = OmeBigTiff5D::SizeI();
-	SizePXY = UINT32(BytesPerSample()) * SizeX() * SizeY();
+	SizePXY = UINT32(SizeP()) * SizeX() * SizeY();
 	const 文件偏移<UINT64, char> 图像描述偏移 = FirstTags[0].ASCII偏移;
 	UINT64 像素偏移 = FirstTags[1].LONG8值;
 	IFD偏移<UINT64,UINT64> 当前IFD偏移 = 文件头->FirstIFD;
@@ -628,7 +616,8 @@ void 设置颜色(xml_node 节点, 颜色 Color)
 }
 void OmeBigTiff5D::修改基本参数(UINT16 SizeX, UINT16 SizeY, UINT8 SizeC, UINT8 SizeZ, UINT16 SizeT, 维度顺序 DimensionOrder, 像素类型 PixelType, const 颜色* Colors,const char* 新文件名) noexcept
 {
-	const bool 单帧尺寸改变 = SizeX || SizeY || PixelType != 像素类型::缺省;
+	const bool 像素数改变 = SizeX || SizeY;
+	const bool 单帧尺寸改变 = 像素数改变 || PixelType != 像素类型::缺省;
 	if (SizeX)
 		iSizeX.set_value(SizeX);
 	else
@@ -654,9 +643,11 @@ void OmeBigTiff5D::修改基本参数(UINT16 SizeX, UINT16 SizeY, UINT8 SizeC, U
 		SizeT = OmeBigTiff5D::SizeT();
 	if (IFD顺序改变)
 		iDimensionOrder.set_value(维度顺序字符串[UINT8(DimensionOrder)]);
+	if (像素数改变 || IFD数目改变 || IFD顺序改变)
+		生成各维尺寸();
 	UINT8 SizeP;
 	if (PixelType == 像素类型::缺省)
-		SizeP = BytesPerSample();
+		SizeP = OmeBigTiff5D::SizeP();
 	else
 	{
 		SizeP = UINT8(PixelType);
@@ -697,6 +688,7 @@ void OmeBigTiff5D::SizeX(UINT16 SizeX) noexcept
 		FirstTags[2].SHORT值 = SizeX;
 		FirstTags[6].SHORT值 = SizePXY;
 		填充IFD(SizeI, 文件头->FirstIFD, 基地址, false, SizePXY);
+		i各维尺寸[0] = SizeX;
 	}
 }
 void OmeBigTiff5D::SizeY(UINT16 SizeY) noexcept
@@ -711,6 +703,7 @@ void OmeBigTiff5D::SizeY(UINT16 SizeY) noexcept
 		FirstTags[5].SHORT值 = SizeY;
 		FirstTags[6].SHORT值 = SizePXY;
 		填充IFD(SizeI, 文件头->FirstIFD, 基地址, false, SizePXY);
+		i各维尺寸[1] = SizeY;
 	}
 }
 void OmeBigTiff5D::IFD更新必备(bool 必须重新生成)
@@ -724,7 +717,11 @@ void OmeBigTiff5D::IFD更新必备(bool 必须重新生成)
 void OmeBigTiff5D::SizeC(UINT8 SizeC) noexcept
 {
 	if (更新通道(SizeC))
+	{
 		IFD更新必备(true);
+		const char* const DO = iDimensionOrder.value();
+		i各维尺寸[std::find(DO, DO + 5, 'C') - DO] = SizeC;
+	}
 }
 void OmeBigTiff5D::SizeZ(UINT8 SizeZ) noexcept
 {
@@ -732,6 +729,8 @@ void OmeBigTiff5D::SizeZ(UINT8 SizeZ) noexcept
 	{
 		iSizeZ.set_value(SizeZ);
 		IFD更新必备(true);
+		const char* const DO = iDimensionOrder.value();
+		i各维尺寸[std::find(DO, DO + 5, 'Z') - DO] = SizeZ;
 	}
 }
 void OmeBigTiff5D::SizeT(UINT16 SizeT) noexcept
@@ -740,6 +739,8 @@ void OmeBigTiff5D::SizeT(UINT16 SizeT) noexcept
 	{
 		iSizeT.set_value(SizeT);
 		IFD更新必备(true);
+		const char* const DO = iDimensionOrder.value();
+		i各维尺寸[std::find(DO, DO + 5, 'T') - DO] = SizeT;
 	}
 }
 void OmeBigTiff5D::DimensionOrder(维度顺序 DO) noexcept
@@ -749,6 +750,7 @@ void OmeBigTiff5D::DimensionOrder(维度顺序 DO) noexcept
 	{
 		iDimensionOrder.set_value(DO字符串);
 		IFD更新必备(false);
+		生成各维尺寸();
 	}
 }
 void OmeBigTiff5D::PixelType(像素类型 PT) noexcept
@@ -797,7 +799,7 @@ void OmeBigTiff5D::ImageDescription(const char* WriteIn) noexcept
 	更新图像描述并扩展文件(true, SizeI, SizePXY);
 	FirstTags[2].SHORT值 = SizeX();
 	FirstTags[3].SHORT值 = SizeY();
-	FirstTags[4].SHORT值 = BytesPerSample() * 8;
+	FirstTags[4].SHORT值 =SizeP() * 8;
 	FirstTags[5].SHORT值 = SizeY();
 	FirstTags[6].SHORT值 = SizePXY;
 	填充IFD(SizeI, 文件头->FirstIFD, 基地址, true, SizePXY);
@@ -812,35 +814,15 @@ void OmeBigTiff5D::FileName(const char* 新文件名) noexcept
 	if (更新图像描述并扩展文件(false, SizeI, SizePXY))
 		填充IFD(SizeI, 文件头->FirstIFD, 基地址, false, SizePXY);
 }
-BYTE* OmeBigTiff5D::变内部像素指针常(UINT16 X, UINT16 Y, UINT32 I)const noexcept
+BYTE* OmeBigTiff5D::内部像素指针3D(UINT16 X, UINT16 Y, UINT32 I)noexcept
 {
-	return 像素指针() + ((UINT64(I) * SizeY() + Y) * SizeX() + X) * BytesPerSample();
+	return 像素指针() + ((UINT64(I) * SizeY() + Y) * SizeX() + X) * SizeP();
 }
-const BYTE* OmeBigTiff5D::内部像素指针3D(UINT16 X, UINT16 Y, UINT32 I) noexcept
+BYTE* OmeBigTiff5D::内部像素指针5D(UINT16 X, UINT16 Y, UINT16 P2, UINT16 P3, UINT16 P4)noexcept
 {
-	return 变内部像素指针常(X, Y, I);
+	return 像素指针() + (((UINT64(P4) * i各维尺寸[3] + P3) * i各维尺寸[2] + P2) * i各维尺寸[1] + Y) * i各维尺寸[0] + X;
 }
-BYTE* OmeBigTiff5D::变内部像素指针常(UINT16 X, UINT16 Y, UINT8 C, UINT8 Z, UINT16 T)const noexcept
+const UINT32* OmeBigTiff5D::各维尺寸()const noexcept
 {
-	UINT64 偏移 = 0;
-	const char* DO = iDimensionOrder.value() + 4;
-	const char* const DOE = DO - 3;
-	while (DO > DOE)
-		switch (*(DO--))
-		{
-		case 'C':
-			偏移 = 偏移 * SizeC() + C;
-			break;
-		case 'Z':
-			偏移 = 偏移 * SizeZ() + Z;
-			break;
-		case 'T':
-			偏移 = 偏移 * SizeT() + T;
-			break;
-		}
-	return 像素指针() + (((偏移 * SizeY()) + Y) * SizeX() + X) * BytesPerSample();
-}
-const BYTE* OmeBigTiff5D::内部像素指针5D(UINT16 X, UINT16 Y, UINT8 C, UINT8 Z, UINT16 T) noexcept
-{
-	return 变内部像素指针常(X, Y, C, Z, T);
+	return i各维尺寸;
 }

@@ -3,13 +3,6 @@
 class IOmeBigTiff5D :public IOmeTiffReader
 {
 public:
-	//不需要缓存，因此提供常量接口：
-	virtual UINT32 SizeI常()const noexcept = 0;
-	virtual void 读入像素常(UINT16 XSize, UINT16 YSize, UINT32 ISize, UINT64* XRange, UINT64* YRange, UINT64* IRange, BYTE* BytesOut)const noexcept = 0;
-	virtual void 读入像素常(UINT16 XSize, UINT16 YSize, UINT8 CSize, UINT8 ZSize, UINT16 TSize, UINT64* XRange, UINT64* YRange, UINT64* CRange, UINT64* ZRange, UINT64* TRange, BYTE* BytesOut)const noexcept = 0;
-	//返回可写内存指针，提供常量接口
-	virtual BYTE* 变内部像素指针常(UINT16 X, UINT16 Y, UINT32 I)const noexcept = 0;
-	virtual BYTE* 变内部像素指针常(UINT16 X, UINT16 Y, UINT8 C, UINT8 Z, UINT16 T)const noexcept = 0;
 	/*
 	对于尺寸的修改，仅修改逻辑上的尺寸，不会修改实际像素值数组的排布，因此原图将可能发生错位。如果尺寸扩大，多出来的部分的初始值是未定义的
 	无需修改的值设为0、缺省或nullptr。
@@ -71,26 +64,24 @@ public:
 	//一般用于将其它文件中取得的图像描述直接拷贝进来。如果缺少或不具有正确的文件名和TiffData信息，将会自动纠正。字符串应当是0结尾的。
 	virtual void ImageDescription(const char* WriteIn)noexcept = 0;
 	/*
-	5D写入，给定要写入的目标位置，其每个维度的索引及尺寸。如果要顺序写入某个维度的全部位置，可将该维度索引指针设为nullptr。此时对应的Size会被忽略，任何值均不影响结果
+	5D写出，给定要写入的目标位置，其每个维度的索引及尺寸。如果要顺序写入某个维度的全部位置，可将该维度索引指针设为nullptr。此时对应的Size会被忽略，任何值均不影响结果
 	调用方应当保证写入的数据源BytesIn具有和目标一致的维度顺序。
 	*/
-	virtual void 写出像素(UINT16 XSize, UINT16 YSize, UINT8 CSize, UINT8 ZSize, UINT16 TSize, UINT64* XRange, UINT64* YRange, UINT64* CRange, UINT64* ZRange, UINT64* TRange, const BYTE* BytesIn)const noexcept = 0;
+	virtual void 写出像素(UINT16 XSize, UINT16 YSize, UINT16 Size2, UINT16 Size3, UINT16 Size4, UINT64* XRange,UINT64* YRange, UINT64* Range2, UINT64* Range3,UINT64* Range4,const BYTE* BytesIn)noexcept = 0;
 	//打开现存的有效的文件。如果文件不存在或格式不正确，将产生意外结果。
-	virtual void 打开现存(LPCWSTR 文件路径)noexcept = 0;
-	//尝试打开现存的有效的文件。如果文件不存在或格式不正确，将返回false。
-	virtual 尝试结果 尝试打开(LPCWSTR 文件路径)noexcept = 0;
-	//尝试打开现存的有效的OmeBigTiff5D文件。如果文件不存在或格式不正确，将用输入参数覆盖创建新文件；否则指定的参数将被忽略。返回是否实施了打开而非创建
-	virtual bool 打开或创建(LPCWSTR 文件路径, UINT16 SizeX, UINT16 SizeY, UINT8 SizeC, UINT8 SizeZ, UINT16 SizeT, 维度顺序 DimensionOrder, 像素类型 PixelType, const 颜色* ChannelColors = nullptr)noexcept = 0;
+	virtual 尝试结果 打开现存(LPCWSTR 文件路径)noexcept = 0;
+	//尝试打开现存的有效的OmeBigTiff5D文件。如果文件不存在或格式不正确，将用输入参数覆盖创建新文件；否则指定的参数将被忽略。返回是否实施了打开而非创建。ChannelColors可以设为nullptr以使用默认白色。
+	virtual 尝试结果 打开或创建(LPCWSTR 文件路径, UINT16 SizeX, UINT16 SizeY, UINT8 SizeC, UINT8 SizeZ, UINT16 SizeT, 维度顺序 DimensionOrder, 像素类型 PixelType, const 颜色* ChannelColors,bool& 打开而非创建)noexcept = 0;
 	//尝试打开现存的有效的OmeBigTiff5D文件。如果文件不存在或格式不正确，将用输入参数覆盖创建新文件；否则指定的参数将被忽略。返回是否实施了打开而非创建。输入的ImageDescription参数应当具有0结尾
-	virtual bool 打开或创建(LPCWSTR 文件路径, const char* ImageDescription)noexcept = 0;
-	//无论目标文件是否存在，覆盖创建新文件。
-	virtual 尝试结果 覆盖创建(LPCWSTR 文件路径, UINT16 SizeX, UINT16 SizeY, UINT8 SizeC, UINT8 SizeZ, UINT16 SizeT, 维度顺序 DimensionOrder, 像素类型 PixelType, const 颜色* ChannelColors = nullptr)noexcept = 0;
+	virtual 尝试结果 打开或创建(LPCWSTR 文件路径, const char* ImageDescription,bool& 打开而非创建)noexcept = 0;
+	//无论目标文件是否存在，覆盖创建新文件。ChannelColors可以设为nullptr以使用默认白色。
+	virtual 尝试结果 覆盖创建(LPCWSTR 文件路径, UINT16 SizeX, UINT16 SizeY, UINT8 SizeC, UINT8 SizeZ, UINT16 SizeT, 维度顺序 DimensionOrder, 像素类型 PixelType, const 颜色* ChannelColors)noexcept = 0;
 	//无论目标文件是否存在，覆盖创建新文件。输入的ImageDescription参数应当具有0结尾
 	virtual 尝试结果 覆盖创建(LPCWSTR 文件路径, const char* ImageDescription)noexcept = 0;
 };
 /*
 返回接口指针，使用完毕后应当调用销毁。请始终使用指针访问对象，不要尝试复制对象的值。
-获取对象后需继续调用“打开现存”、“尝试打开”、“打开或创建”或“覆盖创建”以操作磁盘上的文件。
+获取对象后需继续调用“打开现存”、“打开或创建”或“覆盖创建”以操作磁盘上的文件。
 */
 OmeBigTiff5D导出(IOmeBigTiff5D*) 创建OmeBigTiff5D();
 OmeBigTiff5D导出(void) 销毁OmeBigTiff5D(IOmeBigTiff5D*);

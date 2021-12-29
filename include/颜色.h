@@ -1,7 +1,8 @@
 #pragma once
 union 颜色
 {
-	UINT32 整数值;
+	//OME标准是用Java实现，不支持无符号整数，就很坑
+	INT32 整数值;
 #pragma pack(1)
 	struct
 	{

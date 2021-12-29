@@ -2,74 +2,35 @@
 #include "Tiff文件头.h"
 #include "SmallTiffReader.h"
 #include "BigTiffReader.h"
-#include "Win32异常.h"
-#include "Tiff异常.h"
-OmeBigTiff5D导出(ITiffReader*) 创建TiffReader(LPCWSTR 文件路径)
+OmeBigTiff5D导出(尝试结果) 创建TiffReader(LPCWSTR 文件路径,ITiffReader*& 文件指针)
 {
 	const HANDLE File = CreateFileW(文件路径, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+	if (File == INVALID_HANDLE_VALUE)
+		return 尝试结果{ .结果 = 结果分类::Win32异常,.错误代码 = GetLastError(),.错误消息 = "文件打开失败" };
 	Tiff文件头 文件头;
 	DWORD NumberOfBytesRead;
 	ReadFile(File, &文件头, sizeof(文件头), &NumberOfBytesRead, NULL);
-	TiffReader* 对象;
 	switch (文件头.VersionNumber)
 	{
 	case 42:
-		对象 = new SmallTiffReader;
+		文件指针 = new SmallTiffReader;
 		break;
 	case 43:
-		对象 = new BigTiffReader;
-		break;
-	}
-	对象->加载文件(File);
-	return 对象;
-}
-OmeBigTiff5D导出(ITiffReader*) 尝试创建TiffReader(LPCWSTR 文件路径, 尝试结果& 结果)
-{
-	const HANDLE File = CreateFileW(文件路径, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
-	if (File==INVALID_HANDLE_VALUE)
-	{
-		结果 = 尝试结果{ .结果 = 结果分类::Win32异常,.错误代码 = GetLastError(),.错误消息 = "打开文件失败" };
-		return nullptr;
-	}
-	Tiff文件头 文件头;
-	DWORD NumberOfBytesRead;
-	if (!ReadFile(File, &文件头, sizeof(文件头), &NumberOfBytesRead, NULL))
-	{
-		结果 = 尝试结果{ .结果 = 结果分类::Win32异常,.错误代码 = GetLastError(),.错误消息 = "读取文件头失败" };
-		return nullptr;
-	}
-	TiffReader* 返回指针;
-	switch (文件头.VersionNumber)
-	{
-	case 42:
-		返回指针 = new SmallTiffReader();
-		break;
-	case 43:
-		返回指针 = new BigTiffReader();
+		文件指针 = new BigTiffReader;
 		break;
 	default:
-		结果 = 尝试结果{ .结果 = 结果分类::Tiff异常,.异常类型 = Tiff异常类型::不支持的格式,.错误消息 = "文件头中的版本号信息无效" };
-		return nullptr;
-		break;
+		return 尝试结果{ .结果 = 结果分类::Tiff异常,.异常类型 = Tiff异常类型::不支持的格式,.错误消息 = "不支持的Tiff版本" };
 	}
 	try
 	{
-		返回指针->尝试加载(File);
+		((TiffReader*)文件指针)->加载文件(File);
 	}
-	catch (Tiff异常 ex)
+	catch( 尝试结果 ex)
 	{
-		结果 = 尝试结果{ .结果 = 结果分类::Tiff异常,.异常类型 = ex.类型,.错误消息 = ex.错误消息 };
-		delete 返回指针;
-		return nullptr;
+		delete 文件指针;
+		return ex;
 	}
-	catch (Win32异常 ex)
-	{
-		结果 = 尝试结果{ .结果 = 结果分类::Win32异常,.错误代码 = ex.错误代码,.错误消息 = ex.错误消息 };
-		delete 返回指针;
-		return nullptr;
-	}
-	结果 = 尝试结果{ .结果 = 结果分类::成功 };
-	return 返回指针;
+	return 尝试结果{ .结果 = 结果分类::成功 };
 }
 OmeBigTiff5D导出(void) 销毁TiffReader(ITiffReader* 对象)
 {

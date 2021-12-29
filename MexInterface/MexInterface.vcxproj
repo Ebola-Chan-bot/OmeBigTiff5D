@@ -41,7 +41,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>false</LinkIncremental>
     <TargetExt>.mexw64</TargetExt>
-    <OutDir>$(SolutionDir)+OBT5\private\</OutDir>
+    <OutDir>$(SolutionDir)MATLAB工具箱\+OBT5\private\</OutDir>
     <EmbedManifest>false</EmbedManifest>
     <IntDir>$(ProjectDir)build\$(Platform)\$(Configuration)\</IntDir>
     <MatlabRoot>C:\Program Files\MATLAB\R2021b\</MatlabRoot>

@@ -30,18 +30,20 @@ classdef TiffReader<handle
 	end
 	methods(Access=protected)
 		function Pixels=ReadPixels(obj,VAI,DimensionOrder,API)
-			if isa(VAI{1},'uint64')
+			Ranges=cell(1,numel(DimensionOrder));
+			if ~isempty(VAI)&&isa(VAI{1},'uint64')
 				ToPointer=VAI{1};
 				VAI(1)=[];
 			else
 				ToPointer=0;
 			end
-			Ranges=cell(1,numel(DimensionOrder));
-			if isnumeric(VAI{1})
-				Ranges(1:numel(VAI))=VAI;
-			else
-				[~,ReorderIndex]=ismember(char(strcat(VAI{1:2:end})),DimensionOrder);
-				Ranges(ReorderIndex)=VAI(2:2:end);
+			if ~isempty(VAI)
+				if isnumeric(VAI{1})
+					Ranges(1:numel(VAI))=VAI;
+				else
+					[~,ReorderIndex]=ismember(char(strcat(VAI{1:2:end})),DimensionOrder);
+					Ranges(ReorderIndex)=VAI(2:2:end);
+				end
 			end
 			Ranges=cellfun(@uint64,Ranges,UniformOutput=false);
 			if ToPointer
@@ -68,23 +70,39 @@ classdef TiffReader<handle
 		function Type=PixelType(obj)
 			Type=OBT5.PixelType(MexInterface(uint8(OBT5.Internal.ApiCode.PixelType),obj.Pointer));
 		end
-		function Bytes=BytesPerSample(obj)
-			Bytes=MexInterface(uint8(OBT5.Internal.ApiCode.BytesPerSample),obj.Pointer);
+		function Bytes=SizeP(obj)
+			Bytes=MexInterface(uint8(OBT5.Internal.ApiCode.SizeP),obj.Pointer);
 		end
-		function Pointer=PixelPointer3D(obj,options)
+		function Pointer=PixelPointer3D(obj,X,Y,I,options)
 			%返回指定位置的只读像素指针
-			%不能使用此方法返回的指针进行跨IFD对拷。只有OBT5对象返回的指针才支持跨IFD对拷。
-			%% 名称值参数
+			%不能使用此方法返回的指针进行跨IFD对拷。只有OBT5对象返回的指针才支持跨IFD对拷。所有索引值从0开始，不同于MATLAB标准索引规则
+			%% 语法
+			%直接指定XYI坐标
+			%obj.PixelPointer3D([X][,Y][,I])
+			%未指定的坐标默认0，例如：
+			%obj.PixelPointer3D(0,1)
+			%取X0，Y1，I0位置像素指针
+
+			%指定特定坐标
+			%obj.PixelPointer3D(Dimension1=Position1,Dimension2=Position2,…)
+			%未指定的坐标默认0，例如：
+			%obj.PixelPointer3D(I=2)
+			%取I2，X0，Y0位置像素指针
+			%% 参数说明
 			%X, Y(1,1)uint16=0，指针要指向的XY位置
 			%I(1,1)uint32=0，指针要指向的IFD序号
-			%注意索引是从0开始，不同于MATLAB的一般索引规范
+			%Dimension1, Dimension2, …，可用维度包括XYI，任意顺序指定不影响结果。
+			%Position1, Position2, …，对应维度位置
 			%% 返回值
 			%Pointer(1,1)uint64，指向指定像素位置的内存指针。此方法返回的像素指针指向只读内存段，请勿对其进行写入操作，可以用作OmeBigTiff5D.WritePixels5D的指针参数，实现直接拷贝。但因为标准Tiff的像素数据在IFD之间不是连续排列的，此方法不能可靠地连续拷贝多个IFD的像素值。
 			arguments
 				obj(1,1)OBT5.TiffReader
-				options.X(1,1)uint16=0
-				options.Y(1,1)uint16=0
-				options.I(1,1)uint32=0
+				X(1,1)uint16=0
+				Y(1,1)uint16=0
+				I(1,1)uint32=0
+				options.X(1,1)uint16=X
+				options.Y(1,1)uint16=Y
+				options.I(1,1)uint32=I
 			end
 			Pointer=MexInterface(uint8(OBT5.Internal.ApiCode.PixelPointer3D),obj.Pointer,options.X,options.Y,options.I);
 		end

@@ -2,62 +2,22 @@
 #include "SmallTiffReader.h"
 #include "SmallTiff文件头.h"
 #include "像素类型尺寸.h"
-#include "Tiff异常.h"
 void SmallTiffReader::加载文件(HANDLE 文件句柄)
-{
-	ReaderBase::加载文件(文件句柄);
-	下个IFD = ((SmallTiff文件头*)基地址)->FirstIFD;
-	const IFD指针<UINT16, UINT32> 下个IFD指针 = 下个IFD.取指针(基地址);
-	Tag<UINT32>* 当前标签 = 下个IFD指针.Tags();
-	const Tag<UINT32>* 标签尾 = 当前标签 + 下个IFD指针.NumberOfTags();
-	UINT8 完成进度 = 0;
-	while (完成进度 < 4 && 当前标签 < 标签尾)
-	{
-		switch (当前标签->Identifier)
-		{
-		case TagID::StripOffsets:
-			IFD像素指针.push_back(当前标签->BYTE偏移.取指针(基地址));
-			完成进度++;
-			break;
-		case TagID::BitsPerSample:
-			iBytesPerSample = 当前标签->BYTE值 / 8;
-			for (UINT8 P = 0; P < 像素类型个数; ++P)
-				if (像素类型尺寸[P] == iBytesPerSample)
-				{
-					iPixelType = 像素类型(P);
-					break;
-				}
-			完成进度++;
-			break;
-		case TagID::ImageLength:
-			iSizeX = 当前标签->SHORT值;
-			完成进度++;
-			break;
-		case TagID::ImageWidth:
-			iSizeY = 当前标签->SHORT值;
-			完成进度++;
-			break;
-		}
-		当前标签++;
-	}
-	下个IFD = 下个IFD指针.NextIFD();
-}
-void SmallTiffReader::尝试加载(HANDLE 文件句柄)
 {
 	LARGE_INTEGER 文件大小{ .QuadPart = 0 };
 	SetFilePointerEx(文件句柄, 文件大小, &文件大小, FILE_END);
-	ReaderBase::尝试加载(文件句柄);
+	ReaderBase::加载文件(文件句柄);
 	const char* 内存尾 = 基地址 + 文件大小.QuadPart;
 	if (内存尾 < 基地址 + sizeof(SmallTiff文件头))
-		throw Tiff异常(Tiff异常类型::文件太小, "读文件头时意外地遇到文件尾");
+		throw 尝试结果{ .结果 = 结果分类::Tiff异常,.异常类型 = Tiff异常类型::文件太小,.错误消息 = "读文件头时意外地遇到文件尾" };
 	下个IFD = ((SmallTiff文件头*)基地址)->FirstIFD;
 	const IFD指针<UINT16, UINT32> 下个IFD指针 = 下个IFD.取指针(基地址);
 	Tag<UINT32>* 当前标签 = 下个IFD指针.Tags();
 	if (内存尾 < 下个IFD指针.指针 + sizeof(UINT16))
-		throw Tiff异常(Tiff异常类型::文件太小, "读标签个数时意外地遇到文件尾");
+		throw 尝试结果{ .结果 = 结果分类::Tiff异常,.异常类型 = Tiff异常类型::文件太小,.错误消息 = "读标签个数时意外地遇到文件尾" };
 	const Tag<UINT32>* 标签尾 = 当前标签 + 下个IFD指针.NumberOfTags();
 	if (内存尾 < (char*)标签尾)
-		throw Tiff异常(Tiff异常类型::文件太小, "读标签列表时意外地遇到文件尾");
+		throw 尝试结果{ .结果 = 结果分类::Tiff异常,.异常类型 = Tiff异常类型::文件太小,.错误消息 = "读标签列表时意外地遇到文件尾" };
 	UINT8 完成进度 = 0;
 	const UINT8* 像素指针;
 	bool 像素偏移未设置 = true;
@@ -71,15 +31,15 @@ void SmallTiffReader::尝试加载(HANDLE 文件句柄)
 		case TagID::StripOffsets:
 			像素指针 = 当前标签->BYTE偏移.取指针(基地址);
 			if (内存尾 < (char*)像素指针)
-				throw Tiff异常(Tiff异常类型::文件太小, "像素偏移超出文件范围");
+				throw 尝试结果{ .结果 = 结果分类::Tiff异常,.异常类型 = Tiff异常类型::文件太小,.错误消息 = "像素偏移超出文件范围" };
 			IFD像素指针.push_back(像素指针);
 			完成进度++;
 			像素偏移未设置 = false;
 			break;
 		case TagID::BitsPerSample:
-			iBytesPerSample = 当前标签->BYTE值 / 8;
+			iSizeP = 当前标签->BYTE值 / 8;
 			for (UINT8 P = 0; P < 像素类型个数; ++P)
-				if (像素类型尺寸[P] == iBytesPerSample)
+				if (像素类型尺寸[P] == iSizeP)
 				{
 					iPixelType = 像素类型(P);
 					break;
@@ -103,19 +63,19 @@ void SmallTiffReader::尝试加载(HANDLE 文件句柄)
 	if (完成进度 < 4)
 	{
 		if (像素偏移未设置)
-			throw Tiff异常(Tiff异常类型::缺少标签, "未设置StripOffsets标签");
+			throw 尝试结果{ .结果 = 结果分类::Tiff异常,.异常类型 = Tiff异常类型::缺少标签,.错误消息 = "未设置StripOffsets标签" };
 		if (像素字节未设置)
-			throw Tiff异常(Tiff异常类型::缺少标签, "未设置BitsPerSample标签");
+			throw 尝试结果{ .结果 = 结果分类::Tiff异常,.异常类型 = Tiff异常类型::缺少标签,.错误消息 = "未设置BitsPerSample标签" };
 		if (图像长度未设置)
-			throw Tiff异常(Tiff异常类型::缺少标签, "未设置ImageLength标签");
+			throw 尝试结果{ .结果 = 结果分类::Tiff异常,.异常类型 = Tiff异常类型::缺少标签,.错误消息 = "未设置ImageLength标签" };
 		if (图像宽度未设置)
-			throw Tiff异常(Tiff异常类型::缺少标签, "未设置ImageWidth标签");
+			throw 尝试结果{ .结果 = 结果分类::Tiff异常,.异常类型 = Tiff异常类型::缺少标签,.错误消息 = "未设置ImageWidth标签" };
 	}
-	if (内存尾 < (char*)像素指针 + UINT32(iSizeX) * iSizeY * iBytesPerSample)
-		throw Tiff异常(Tiff异常类型::文件太小, "像素数据超出文件尾");
+	if (内存尾 < (char*)像素指针 + UINT32(iSizeX) * iSizeY * iSizeP)
+		throw 尝试结果{ .结果 = 结果分类::Tiff异常,.异常类型 = Tiff异常类型::文件太小,.错误消息 = "像素数据超出文件尾" };
 	下个IFD = 下个IFD指针.NextIFD();
 	if (文件大小.QuadPart < 下个IFD.偏移)
-		throw Tiff异常(Tiff异常类型::文件太小, "第2个IFD超出文件尾");
+		throw 尝试结果{ .结果 = 结果分类::Tiff异常,.异常类型 = Tiff异常类型::文件太小,.错误消息 = "第2个IFD超出文件尾" };
 }
 UINT32 SmallTiffReader::缓存全部()
 {

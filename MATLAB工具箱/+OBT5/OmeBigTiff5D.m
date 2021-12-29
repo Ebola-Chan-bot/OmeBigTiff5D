@@ -67,7 +67,7 @@ classdef OmeBigTiff5D<OBT5.OmeTiffReader
 			% SizeC, SizeZ(1,1)uint8=1，图像颜色通道数、层数
 			% DimensionOrder(1,1)OBT5.DimensionOrder=OBT5.DimensionOrder.XYCZT，维度顺序
 			% PixelType(1,1)OBT5.PixelType=OBT5.PixelType.UINT16，像素类型
-			% ChannelColors(:,1)uint32，各通道颜色，每个通道用一个uint32表示颜色，详见ChannelColor函数
+			% ChannelColors(:,1)int32，各通道颜色，每个通道用一个int32表示颜色，详见ChannelColor函数
 			%% 返回值
 			% obj(1,1)OBT5.OmeBigTiff5D
 			% Open(1,1)logical，使用OpenOrCreate时，返回逻辑值，指示图像是否被打开而非新建
@@ -82,7 +82,7 @@ classdef OmeBigTiff5D<OBT5.OmeTiffReader
 				options.SizeT(1,1)uint16=1
 				options.DimensionOrder(1,1)OBT5.DimensionOrder=OBT5.DimensionOrder.XYCZT
 				options.PixelType(1,1)OBT5.PixelType=OBT5.PixelType.UINT16
-				options.ChannelColors(:,1)uint32=[]
+				options.ChannelColors(:,1)int32=[]
 			end
 			varargout=cell(1,(CD==OBT5.CreationDisposition.OpenOrCreate)+1);
 			if isempty(ImageDescription)
@@ -150,16 +150,16 @@ classdef OmeBigTiff5D<OBT5.OmeTiffReader
 		end
 		function varargout=ChannelColor(obj,varargin)
 			%获取或设置全部或指定通道的颜色
-			%返回的每个颜色值为uint32类型，可通过typecast函数转换为ABGR分量。例如如果返回颜色值16711935(0xff00ff)，则可计算如下：
+			%返回的每个颜色值为int32类型，可通过typecast函数转换为ABGR分量。例如如果返回颜色值16711935(0xff00ff)，则可计算如下：
 			% >>typecast(0xff00ff,'uint8')
 			% ans =
 			%  1×4 uint8 行向量
 			%   255     0   255     0
 			% 4个uint8值依次为该颜色的不透明度(Alpha)=255、蓝色分量(Blue)=0、绿色分量(Green)=255、红色分量(Red)=0
-			%设置的颜色值也同样需要排列成ABGR向量，然后用typecast转换成uint32类型后交付给本函数进行设置：
-			% >>typecast(uint8([255 0 255 0]),'uint32')
+			%设置的颜色值也同样需要排列成ABGR向量，然后用typecast转换成int32类型后交付给本函数进行设置：
+			% >>typecast([0xff 0x00 0xff 0x00],'int32')
 			% ans =
-			%  uint32
+			%  int32
 			%   16711935
 			%% 语法
 			% Colors=obj.ChannelColor; %获取所有通道的颜色
@@ -168,17 +168,17 @@ classdef OmeBigTiff5D<OBT5.OmeTiffReader
 			% obj.ChannelColor(Channel,Color); %设置指定通道的颜色
 			%% 可选参数
 			% Channel(1,1)uint8，要获取/指定哪个通道的颜色？注意索引是从0开始，不同于MATLAB的一般索引规范
-			% Colors(:,1)uint32，依次设置每个通道的颜色
-			% Color(1,1)uint32，要设置的单个通道的颜色
+			% Colors(:,1)int32，依次设置每个通道的颜色
+			% Color(1,1)int32，要设置的单个通道的颜色
 			%% 返回值
-			% Color(:,1)uint32，如果指定了Channel参数则为标量，表示指定通道的颜色；否则为列向量，依次排列所有通道的颜色。
+			% Color(:,1)int32，如果指定了Channel参数则为标量，表示指定通道的颜色；否则为列向量，依次排列所有通道的颜色。
 			varargout=cell(1,nargout);
 			[varargout{:}]=MexInterface(uint8(OBT5.Internal.ApiCode.ChannelColor),obj.Pointer,varargin{:});
 		end
 		function WritePixels5D(obj,PixelPointer,varargin)
 			%向文件写出5D像素数据
 			%% 语法
-			%以下涉及所有索引参数，均从0开始，而不同于MATLAB标准索引规范。
+			%以下涉及所有索引参数，均从0开始，而不同于MATLAB标准索引规范。索引为[]或不指定，表示写满该维度：此时数组在该维度的尺寸必须等于文件在该维度的尺寸。
 
 			%# 写出与文件维度顺序相同的数组
 			%obj.WritePixels5D(Pixels[,XRange][,YRange][,Range3][,Range4][,Range5]);
@@ -200,17 +200,17 @@ classdef OmeBigTiff5D<OBT5.OmeTiffReader
 			%XRange, YRange(1,:)uint16，要写出到的XY轴范围。向量长度必须与Pixels对应维度长度一致。
 			%Range3, Range4, Range5(1,:)uint16，要写出到的CZT轴范围。维度顺序与文件一致，向量长度与数组对应维度一致。
 			%Dimension1, Dimension2, …，可用的维度包括XYCZT。不同于一般的名称值参数，此处指定名称值参数的维度顺序规定了Pixels数组的维度顺序
-			%Range1, Range2, …(1,:)uint16，对应维度的写出范围，向量长度必须与数组对应维度一致。
+			%Range1, Range2, …(1,:)uint16，对应维度的写出范围，向量长度必须与数组对应维度一致。不指定范围或指定为[]，均表示顺序写满该维度。
 			%FromPointer(1,1)uint64，从给定的内存指针读取要写出的数据，维度顺序必须和目标文件的DimensionOrder一致。如果指针来源于OmeBigTiff5D的PixelPointer3D或PixelPointer5D方法，可用于跨IFD拷贝。
 			Ranges=cell(1,5);
-			if isnumeric(varargin{1})
-				Ranges(1:numel(varargin))=varargin;
-			else
-				DefinedDO=char(strcat(varargin{1:2:end}));
-				[~,ReorderIndex]=ismember(DefinedDO,'XYCZT');
-				Ranges(ReorderIndex)=varargin(2:2:end);
-				[~,ReorderIndex]=ismember(char(obj.DimensionOrder),DefinedDO);
-				PixelPointer=permute(PixelPointer,ReorderIndex);
+			if ~isempty(varargin)
+				if isnumeric(varargin{1})
+					Ranges(1:numel(varargin))=varargin;
+				else
+					[~,Reorder]=ismember(char(strcat(varargin{1:2:end})),char(obj.DimensionOrder));
+					Ranges(Reorder)=varargin(2:2:end);
+					PixelPointer=ipermute(PixelPointer,[Reorder setdiff(1:5,Reorder)]);
+				end
 			end
 			Ranges=cellfun(@uint64,Ranges,UniformOutput=false);
 			MexInterface(uint8(OBT5.Internal.ApiCode.WritePixels5D),obj.Pointer,Ranges{:},PixelPointer);
@@ -226,7 +226,7 @@ classdef OmeBigTiff5D<OBT5.OmeTiffReader
 			% SizeT(1,1)uint16
 			% DimensionOrder(1,1)OBT5.DimensionOrder
 			% PixelType(1,1)OBT5.PixelType
-			% Colors(:,1)uint32，每个通道的颜色。此项要么不指定不修改，要么一口气设定所有通道
+			% Colors(:,1)int32，每个通道的颜色。此项要么不指定不修改，要么一口气设定所有通道
 			% FileName(1,:)char，只修改OME-XML中记录的内部文件名，不会改变面向操作系统的外部文件名
 			arguments
 				obj(1,1)OBT5.OmeBigTiff5D
@@ -237,7 +237,7 @@ classdef OmeBigTiff5D<OBT5.OmeTiffReader
 				options.SizeT(1,1)uint16=0
 				options.DimensionOrder(1,1)OBT5.DimensionOrder=OBT5.DimensionOrder.DEFAULT
 				options.PixelType(1,1)OBT5.PixelType=OBT5.PixelType.DEFAULT
-				options.Colors(:,1)uint32=uint32.empty
+				options.Colors(:,1)int32=uint32.empty
 				options.FileName(1,:)char=''
 			end
 			MexInterface(uint8(OBT5.Internal.ApiCode.ModifyMultiParameters),obj.Pointer,options.SizeX,options.SizeY,options.SizeC,options.SizeZ,options.SizeT,uint8(options.DimensionOrder),uint8(options.PixelType),options.Colors,options.FileName);

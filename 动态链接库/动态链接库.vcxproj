@@ -81,7 +81,6 @@
     <IncludePath>C:\Users\vhtmf\source\repos\OmeBigTiff5D\include;C:\Program Files (x86)\Intel\oneAPI\mkl\2021.4.0\include;$(IncludePath)</IncludePath>
     <LibraryPath>C:\Program Files (x86)\Intel\oneAPI\mkl\2021.4.0\lib\intel64;$(LibraryPath)</LibraryPath>
     <TargetName>OmeBigTiff5D</TargetName>
-    <OutDir>$(SolutionDir)MATLAB工具箱\+OBT5\private\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -186,11 +185,11 @@
     <ClInclude Include="..\include\尝试结果.h" />
     <ClInclude Include="..\include\结果分类.h" />
     <ClInclude Include="..\include\维度顺序.h" />
+    <ClInclude Include="..\include\维度顺序字符串.h" />
     <ClInclude Include="..\include\颜色.h" />
     <ClInclude Include="BigTiffReader.h" />
     <ClInclude Include="BigTiff文件头.h" />
     <ClInclude Include="Compression.h" />
-    <ClInclude Include="CZT重排.h" />
     <ClInclude Include="pugiconfig.hpp" />
     <ClInclude Include="pugixml.hpp" />
     <ClInclude Include="ReaderBase.h" />
@@ -202,7 +201,6 @@
     <ClInclude Include="resource.h" />
     <ClInclude Include="SmallTiffReader.h" />
     <ClInclude Include="SmallTiff文件头.h" />
-    <ClInclude Include="Tiff异常.h" />
     <ClInclude Include="XML内存分配.h" />
     <ClInclude Include="XML内存释放.h" />
     <ClInclude Include="XML文本接收器.h" />
@@ -219,10 +217,8 @@
     <ClInclude Include="OmeTiffReader.h" />
     <ClInclude Include="Tiff文件头.h" />
     <ClInclude Include="Rational.h" />
-    <ClInclude Include="Win32异常.h" />
     <ClInclude Include="是否间断.h" />
     <ClInclude Include="模块句柄.h" />
-    <ClInclude Include="维度顺序个数.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="SRational.h" />
     <ClInclude Include="Tag.h" />
@@ -230,13 +226,11 @@
     <ClInclude Include="TagType.h" />
     <ClInclude Include="TiffReader.h" />
     <ClInclude Include="文件偏移.h" />
-    <ClInclude Include="维度顺序字符串.h" />
     <ClInclude Include="通道ID模板.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="BigTiffReader.cpp" />
     <ClCompile Include="BigTiff文件头.cpp" />
-    <ClCompile Include="CZT重排.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="IFD.cpp" />
     <ClCompile Include="IOmeBigTiff5D.cpp" />
@@ -252,8 +246,6 @@
     <ClCompile Include="N维切片.cpp" />
     <ClCompile Include="N维切片参数.cpp" />
     <ClCompile Include="SmallTiff文件头.cpp" />
-    <ClCompile Include="Tiff异常.cpp" />
-    <ClCompile Include="Win32异常.cpp" />
     <ClCompile Include="XML内存分配.cpp" />
     <ClCompile Include="XML内存释放.cpp" />
     <ClCompile Include="XML文本接收器.cpp" />

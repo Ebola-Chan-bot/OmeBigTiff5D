@@ -41,12 +41,15 @@ classdef OmeTiffReader<OBT5.TiffReader
 		function Order=DimensionOrder(obj)
 			Order=OBT5.DimensionOrder(MexInterface(uint8(OBT5.Internal.ApiCode.DimensionOrder),obj.Pointer));
 		end
+		function Sizes=DimensionSizes(obj)
+			Sizes=MexInterface(uint8(OBT5.Internal.ApiCode.DimensionSizes),obj.Pointer);
+		end
 		function Description=ImageDescription(obj)
 			Description=MexInterface(uint8(OBT5.Internal.ApiCode.ImageDescription),obj.Pointer);
 		end
 		function Color=ChannelColor(obj,varargin)
 			%获取全部或指定通道的颜色
-			%返回的每个颜色值为uint32类型，可通过typecast函数转换为ABGR分量。例如如果返回颜色值16711935(0xff00ff)，则可计算如下：
+			%返回的每个颜色值为int32类型，可通过typecast函数转换为ABGR分量。例如如果返回颜色值16711935(0xff00ff)，则可计算如下：
 			% >>typecast(0xff00ff,'uint8')
 			% ans =
 			% 1×4 uint8 行向量
@@ -58,7 +61,7 @@ classdef OmeTiffReader<OBT5.TiffReader
 			%% 可选参数
 			% Channel(1,1)uint8，要获取哪个通道的颜色？
 			%% 返回值
-			% Color(:,1)uint32，如果指定了Channel参数则为标量，表示指定通道的颜色；否则为列向量，依次排列所有通道的颜色。
+			% Color(:,1)int32，如果指定了Channel参数则为标量，表示指定通道的颜色；否则为列向量，依次排列所有通道的颜色。
 			Color=MexInterface(uint8(OBT5.Internal.ApiCode.ChannelColor),obj.Pointer,varargin{:});
 		end
 		function Pixels=ReadPixels5D(obj,varargin)
@@ -85,26 +88,40 @@ classdef OmeTiffReader<OBT5.TiffReader
 			%ToPointer(1,1)uint64，要写出到的内存指针，这个指针应当来自OmeBigTiff5D.PixelPointer5D函数。指定该参数时，将不返回Pixels。
 			%Dimension1, Dimension2, …，可用的维度包括XYCZT。不同于一般的无序名称值参数，此处指定名称值参数的顺序将决定返回数组的维度顺序。
 			%Range1, Range2, …，对应维度的读入范围。可用[]表示读入该维度全部。
-			Pixels=obj.ReadPixels(varargin,'XYCZT',OBT5.Internal.ApiCode.ReadPixels5D);
+			Pixels=obj.ReadPixels(varargin,char(obj.DimensionOrder),OBT5.Internal.ApiCode.ReadPixels5D);
 		end
-		function Pointer=PixelPointer5D(obj,options)
+		function Pointer=PixelPointer5D(obj,varargin)
 			%返回指定位置的只读像素指针
-			%不能使用此方法返回的指针进行跨IFD对拷。只有OmeBigTiff5D对象返回的指针才支持跨IFD对拷。
-			%% 名称值参数
-			%X, Y, T(1,1)uint16=0，指针要指向的XYT
-			%C, Z(1,1)uint8=0，指针要指向的CZ位置
-			%注意索引是从0开始，不同于MATLAB的一般索引规范
+			%不能使用此方法返回的指针进行跨IFD对拷。只有OmeBigTiff5D对象返回的指针才支持跨IFD对拷。所有索引值从0开始，不同于MATLAB标准索引规则
+			%% 语法
+			%直接指定坐标
+			%obj.PixelPointer3D([X][,Y][,P3][,P4][,P5])
+			%未指定的坐标默认0，例如：
+			%obj.PixelPointer3D(0,1,2)
+			%取X0，Y1，P3=2位置像素指针
+
+			%指定特定坐标
+			%obj.PixelPointer3D(Dimension1=Position1,Dimension2=Position2,…)
+			%未指定的坐标默认0，例如：
+			%obj.PixelPointer3D(C=2)
+			%取C2，X0，Y0位置像素指针
+			%% 参数说明
+			%X, Y(1,1)uint16=0，指针要指向的XY位置
+			%P3, P4, P5(1,1)uint16=0，指针要指向CZT维度位置。这三个维度的顺序取决于DimensionOrder。
+			%Dimension1, Dimension2, …，可用维度包括XYCZT，任意顺序指定不影响结果。
+			%Position1, Position2, …，对应维度位置
 			%% 返回值
 			%Pointer(1,1)uint64，指向指定像素位置的内存指针。此方法返回的像素指针指向只读内存段，请勿对其进行写入操作，可以用作OmeBigTiff5D.WritePixels5D的指针参数，实现直接拷贝。但因为标准Tiff的像素数据在IFD之间不是连续排列的，此方法不能可靠地连续拷贝多个IFD的像素值。
-			arguments
-				obj(1,1)OBT5.TiffReader
-				options.X(1,1)uint16=0
-				options.Y(1,1)uint16=0
-				options.C(1,1)uint8=0
-				options.Z(1,1)uint8=0
-				options.T(1,1)uint16=0
+			Positions=repmat({0},1,5);
+			if ~isempty(varargin)
+				if isnumeric(varargin{1})
+					Positions(1:numel(varargin))=varargin;
+				else
+					[~,Reorder]=ismember(char(strcat(varargin{1:2:end})),char(obj.DimensionOrder));
+					Positions(Reorder)=varargin(2:2:end);
+				end
 			end
-			Pointer=MexInterface(uint8(OBT5.Internal.ApiCode.PixelPointer5D),obj.Pointer,options.X,options.Y,options.C,options.Z,options.T);
+			Pointer=MexInterface(uint8(OBT5.Internal.ApiCode.PixelPointer5D),obj.Pointer,Positions{:});
 		end
 	end
 end

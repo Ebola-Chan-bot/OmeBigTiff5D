@@ -19,7 +19,7 @@ classdef ApiCode<uint8
 		PixelType(14)
 		%无参数为读全部通道，1个UINT8为读特定通道，1个UINT32数组为写全部通道，(UINT8,UINT32)为写特定通道
 		ChannelColor(15)
-		BytesPerSample(16)
+		SizeP(16)
 		ImageDescription(17)
 		ReadPixels3D(18)
 		ReadPixels5D(19)
@@ -27,5 +27,6 @@ classdef ApiCode<uint8
 		PixelPointer3D(21)
 		PixelPointer5D(22)
 		ModifyMultiParameters(23)
+		DimensionSizes(24)
 	end
 end
