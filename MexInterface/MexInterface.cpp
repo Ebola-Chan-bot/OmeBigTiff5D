@@ -180,7 +180,7 @@ Create5D声明(打开或创建)
 		free(图像描述);
 	}
 	else
-		outputs[0] = 处理结果(对象指针->打开或创建(LPCWSTR(文件路径.c_str()), Get数值<UINT16>(inputs[3]), Get数值<UINT16>(inputs[4]), Get数值<UINT8>(inputs[5]), Get数值<UINT8>(inputs[6]), Get数值<UINT16>(inputs[7]), Get数值<维度顺序>(inputs[8]), Get数值<像素类型>(inputs[9]), (颜色*)Get数组指针<UINT32>(inputs[10]), 打开而非创建), 对象指针);
+		outputs[0] = 处理结果(对象指针->打开或创建(LPCWSTR(文件路径.c_str()), Get数值<UINT16>(inputs[3]), Get数值<UINT16>(inputs[4]), Get数值<UINT8>(inputs[5]), Get数值<UINT8>(inputs[6]), Get数值<UINT16>(inputs[7]), Get数值<维度顺序>(inputs[8]), Get数值<像素类型>(inputs[9]), (颜色*)Get数组指针<INT32>(inputs[10]), 打开而非创建), 对象指针);
 	outputs[1] = 数组工厂.createScalar(打开而非创建);
 }
 Create5D声明(覆盖创建)
@@ -194,7 +194,7 @@ Create5D声明(覆盖创建)
 		free(图像描述);
 	}
 	else
-		outputs[0] = 处理结果(对象指针->覆盖创建(LPCWSTR(文件路径.c_str()), Get数值<UINT16>(inputs[3]), Get数值<UINT16>(inputs[4]), Get数值<UINT8>(inputs[5]), Get数值<UINT8>(inputs[6]), Get数值<UINT16>(inputs[7]), Get数值<维度顺序>(inputs[8]), Get数值<像素类型>(inputs[9]), (颜色*)Get数组指针<UINT32>(inputs[10])), 对象指针);
+		outputs[0] = 处理结果(对象指针->覆盖创建(LPCWSTR(文件路径.c_str()), Get数值<UINT16>(inputs[3]), Get数值<UINT16>(inputs[4]), Get数值<UINT8>(inputs[5]), Get数值<UINT8>(inputs[6]), Get数值<UINT16>(inputs[7]), Get数值<维度顺序>(inputs[8]), Get数值<像素类型>(inputs[9]), (颜色*)Get数组指针<INT32>(inputs[10])), 对象指针);
 }
 API声明(CreateOmeBigTiff5D)
 {

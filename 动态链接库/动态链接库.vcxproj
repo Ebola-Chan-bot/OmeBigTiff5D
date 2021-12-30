@@ -81,6 +81,7 @@
     <IncludePath>C:\Users\vhtmf\source\repos\OmeBigTiff5D\include;C:\Program Files (x86)\Intel\oneAPI\mkl\2021.4.0\include;$(IncludePath)</IncludePath>
     <LibraryPath>C:\Program Files (x86)\Intel\oneAPI\mkl\2021.4.0\lib\intel64;$(LibraryPath)</LibraryPath>
     <TargetName>OmeBigTiff5D</TargetName>
+    <OutDir>$(SolutionDir)MATLAB工具箱\+OBT5\private\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
