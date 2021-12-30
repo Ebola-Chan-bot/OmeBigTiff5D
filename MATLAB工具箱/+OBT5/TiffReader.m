@@ -37,6 +37,7 @@ classdef TiffReader<handle
 			else
 				ToPointer=0;
 			end
+			ReorderIndex=[];
 			if ~isempty(VAI)
 				if isnumeric(VAI{1})
 					Ranges(1:numel(VAI))=VAI;
