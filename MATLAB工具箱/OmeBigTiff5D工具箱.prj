@@ -10,7 +10,7 @@ TiffReader：基础Tiff读取器。此类不完全支持完整的TIFF规范文�
 OmeTiffReader：支持TiffReader所有功能。支持OME规范的Tiff读取器。支持XYCZT五维范围指定高速读取，如同访问五维数组一般。
 OmeBigTiff5D：支持OmeBigTiff5D所有功能。读写符合5D规范的OME BigTiff文件。5D是在OME BigTiff规范基础上更进一步的严格格式要求，为了实现高性能的读写。由于5D规范要求像素数据按顺序紧密排列，整个像素数据段可以看作一个完整的5D数组，进行高性能的5D索引操作和连续内存段对拷。</param.description>
     <param.screenshot>${PROJECT_ROOT}\ome.png</param.screenshot>
-    <param.version>3.0.1</param.version>
+    <param.version>3.1.0</param.version>
     <param.output>${PROJECT_ROOT}\OME Big TIFF 5D.mltbx</param.output>
     <param.products.name />
     <param.products.id />
