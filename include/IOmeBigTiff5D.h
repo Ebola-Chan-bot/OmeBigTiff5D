@@ -68,7 +68,9 @@ public:
 	调用方应当保证写入的数据源BytesIn具有和目标一致的维度顺序。
 	*/
 	virtual void 写出像素(UINT16 XSize, UINT16 YSize, UINT16 Size2, UINT16 Size3, UINT16 Size4, UINT64* XRange,UINT64* YRange, UINT64* Range2, UINT64* Range3,UINT64* Range4,const BYTE* BytesIn)noexcept = 0;
-	//打开现存的有效的文件。如果文件不存在或格式不正确，将产生意外结果。
+	//打开现存文件，只需要读取权限
+	virtual 尝试结果 只读打开(LPCWSTR 文件路径)noexcept = 0;
+	//打开现存文件
 	virtual 尝试结果 打开现存(LPCWSTR 文件路径)noexcept = 0;
 	//尝试打开现存的有效的OmeBigTiff5D文件。如果文件不存在或格式不正确，将用输入参数覆盖创建新文件；否则指定的参数将被忽略。返回是否实施了打开而非创建。ChannelColors可以设为nullptr以使用默认白色。
 	virtual 尝试结果 打开或创建(LPCWSTR 文件路径, UINT16 SizeX, UINT16 SizeY, UINT8 SizeC, UINT8 SizeZ, UINT16 SizeT, 维度顺序 DimensionOrder, 像素类型 PixelType, const 颜色* ChannelColors,bool& 打开而非创建)noexcept = 0;

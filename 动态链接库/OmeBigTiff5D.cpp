@@ -80,114 +80,101 @@ void OmeBigTiff5D::生成各维尺寸()
 			break;
 		}
 }
+void OmeBigTiff5D::打开Core(LARGE_INTEGER& 文件尺寸,UINT64& 最小文件尺寸)
+{
+	文件尺寸.QuadPart = 0;
+	SetFilePointerEx(File, 文件尺寸, &文件尺寸, FILE_END);
+	FirstTags = 文件头->FirstIFD.取指针(基地址).Tags();
+	char* const 末地址 = 基地址 + 文件尺寸.QuadPart;
+	if (文件尺寸.QuadPart < sizeof(OmeBigTiff5D文件头))
+		throw 尝试结果{ .结果 = 结果分类::Tiff异常,.异常类型 = Tiff异常类型::文件太小,.错误消息 = "读文件头时意外遇到文件结尾" };
+	if (末地址 < (char*)(FirstTags + 文件头->FirstIFD.取指针(基地址).NumberOfTags()) + sizeof(UINT64))
+		throw 尝试结果{ .结果 = 结果分类::Tiff异常,.异常类型 = Tiff异常类型::文件太小,.错误消息 = "读IFD时意外遇到文件结尾" };
+	const UINT64 NoValues = FirstTags->NoValues;
+	const char* const iImageDescription = FirstTags->ASCII偏移.取指针(基地址);
+	if (末地址 < iImageDescription + NoValues)
+		throw 尝试结果{ .结果 = 结果分类::Tiff异常,.异常类型 = Tiff异常类型::文件太小,.错误消息 = "读图像描述时意外遇到文件结尾" };
+	const xml_parse_result 解析结果 = IDDoc.load_buffer(iImageDescription, NoValues, parse_declaration);
+	const xml_parse_status XML异常 = 解析结果.status;
+	if (XML异常)
+		throw 尝试结果{ .结果 = 结果分类::XML异常,.XML异常 = XML解析结果(XML异常),.错误消息 = 解析结果.description() };
+	xml_node 节点 = IDDoc.child("OME");
+	if (!(节点))
+		throw 尝试结果{ .结果 = 结果分类::Tiff异常,.异常类型 = Tiff异常类型::OME规范,.错误消息 = "OME XML 缺少OME节点" };
+	if (!(唯一标识符 = 节点.attribute("UUID")))
+		throw 尝试结果{ .结果 = 结果分类::Tiff异常,.异常类型 = Tiff异常类型::OME规范,.错误消息 = "OME节点缺少UUID属性" };
+	if (!(节点 = 节点.child("Image")))
+		throw 尝试结果{ .结果 = 结果分类::Tiff异常,.异常类型 = Tiff异常类型::OME规范,.错误消息 = "OME节点下缺少Image节点" };
+	if (!(文件名 = 节点.attribute("Name")))
+		throw 尝试结果{ .结果 = 结果分类::Tiff异常,.异常类型 = Tiff异常类型::OME规范,.错误消息 = "Image节点缺少Name属性" };
+	if (!(Pixels = 节点.child("Pixels")))
+		throw 尝试结果{ .结果 = 结果分类::Tiff异常,.异常类型 = Tiff异常类型::OME规范,.错误消息 = "Image节点下缺少Pixels节点" };
+	if (!(iSizeX = Pixels.attribute("SizeX")))
+		throw 尝试结果{ .结果 = 结果分类::Tiff异常,.异常类型 = Tiff异常类型::OME规范,.错误消息 = "Pixels节点缺少SizeX属性" };
+	if (!(iSizeY = Pixels.attribute("SizeY")))
+		throw 尝试结果{ .结果 = 结果分类::Tiff异常,.异常类型 = Tiff异常类型::OME规范,.错误消息 = "Pixels节点缺少SizeY属性" };
+	if (!(iSizeC = Pixels.attribute("SizeC")))
+		throw 尝试结果{ .结果 = 结果分类::Tiff异常,.异常类型 = Tiff异常类型::OME规范,.错误消息 = "Pixels节点缺少SizeC属性" };
+	if (!(iSizeZ = Pixels.attribute("SizeZ")))
+		throw 尝试结果{ .结果 = 结果分类::Tiff异常,.异常类型 = Tiff异常类型::OME规范,.错误消息 = "Pixels节点缺少SizeZ属性" };
+	if (!(iSizeT = Pixels.attribute("SizeT")))
+		throw 尝试结果{ .结果 = 结果分类::Tiff异常,.异常类型 = Tiff异常类型::OME规范,.错误消息 = "Pixels节点缺少SizeT属性" };
+	if (!(iDimensionOrder = Pixels.attribute("DimensionOrder")))
+		throw 尝试结果{ .结果 = 结果分类::Tiff异常,.异常类型 = Tiff异常类型::OME规范,.错误消息 = "Pixels节点缺少DimensionOrder属性" };
+	生成各维尺寸();
+	if (!(iPixelType = Pixels.attribute("Type")))
+		throw 尝试结果{ .结果 = 结果分类::Tiff异常,.异常类型 = Tiff异常类型::OME规范,.错误消息 = "Pixels节点缺少Type属性" };
+	xml_object_range<xml_named_node_iterator> 通道节点迭代器 = Pixels.children("Channel");
+	std::vector<xml_node> ChannelBuffer;
+	ChannelBuffer.insert(ChannelBuffer.end(), 通道节点迭代器.begin(), 通道节点迭代器.end());
+	const UINT8 SizeC = OmeBigTiff5D::SizeC();
+		throw 尝试结果{ .结果 = 结果分类::Tiff异常,.异常类型 = Tiff异常类型::OME规范,.错误消息 = "Pixels节点下Channel节点数目不等于SizeC" };
+	iChannels = (xml_node*)malloc(sizeof(xml_node) * SizeC);
+	copy(ChannelBuffer.cbegin(), ChannelBuffer.cend(), iChannels);
+	最小文件尺寸 = FirstTags[1].LONG8值 + UINT64(SizeX()) * SizeY() * SizeC * SizeZ() * SizeT() * SizeP();
+}
+尝试结果 OmeBigTiff5D::只读打开(LPCWSTR 文件路径)noexcept
+{
+	File = CreateFileW(文件路径, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+	if (File == INVALID_HANDLE_VALUE)
+		return 尝试结果{ .结果 = 结果分类::Win32异常,.错误代码 = GetLastError(),.错误消息 = "打开文件失败" };
+	FileMappingObject = CreateFileMappingW(File, NULL, PAGE_READONLY, 0, 0, NULL);
+	基地址 = (char*)MapViewOfFile(FileMappingObject, FILE_MAP_READ, 0, 0, 0);
+	LARGE_INTEGER 文件尺寸;
+	UINT64 最小文件尺寸;
+	try 
+	{
+		打开Core(文件尺寸, 最小文件尺寸);
+	}
+	catch (尝试结果 ex)
+	{
+		失败清理();
+		return ex;
+	}
+	if (文件尺寸.QuadPart < 最小文件尺寸)
+	{
+		失败清理();
+		return 尝试结果{ .结果 = 结果分类::Tiff异常,.异常类型 = Tiff异常类型::文件太小,.错误消息 = "读像素值时意外遇到文件尾" };
+	}
+	return 尝试结果{ .结果 = 结果分类::成功 };
+}
 尝试结果 OmeBigTiff5D::打开现存(LPCWSTR 文件路径)noexcept
 {
 	File = CreateFileW(文件路径, GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
 	if (File == INVALID_HANDLE_VALUE)
 		return 尝试结果{ .结果 = 结果分类::Win32异常,.错误代码 = GetLastError(),.错误消息 = "打开文件失败" };
-	LARGE_INTEGER 文件尺寸{ .QuadPart = 0 };
-	SetFilePointerEx(File, 文件尺寸, &文件尺寸, FILE_END);
 	建立映射();
-	FirstTags = 文件头->FirstIFD.取指针(基地址).Tags();
-	char* const 末地址 = 基地址 + 文件尺寸.QuadPart;
-	if (文件尺寸.QuadPart< sizeof(OmeBigTiff5D文件头))
+	LARGE_INTEGER 文件尺寸;
+	UINT64 最小文件尺寸;
+	try
+	{
+		打开Core(文件尺寸, 最小文件尺寸);
+	}
+	catch (尝试结果 ex)
 	{
 		失败清理();
-		return 尝试结果{ .结果 = 结果分类::Tiff异常,.异常类型 = Tiff异常类型::文件太小,.错误消息 = "读文件头时意外遇到文件结尾" };
+		return ex;
 	}
-	if (末地址 < (char*)(FirstTags + 文件头->FirstIFD.取指针(基地址).NumberOfTags()) + sizeof(UINT64))
-	{
-		失败清理();
-		return 尝试结果{ .结果 = 结果分类::Tiff异常,.异常类型 = Tiff异常类型::文件太小,.错误消息 = "读IFD时意外遇到文件结尾" };
-	}
-	const UINT64 NoValues = FirstTags->NoValues;
-	const char* const iImageDescription = FirstTags->ASCII偏移.取指针(基地址);
-	if (末地址 < iImageDescription + NoValues)
-	{
-		失败清理();
-		return 尝试结果{ .结果 = 结果分类::Tiff异常,.异常类型 = Tiff异常类型::文件太小,.错误消息 = "读图像描述时意外遇到文件结尾" };
-	}
-	const xml_parse_result 解析结果 = IDDoc.load_buffer(iImageDescription, NoValues,parse_declaration);
-	const xml_parse_status XML异常 = 解析结果.status;
-	if (XML异常)
-	{
-		失败清理();
-		return 尝试结果{ .结果 = 结果分类::XML异常,.XML异常 = XML解析结果(XML异常),.错误消息 = 解析结果.description() };
-	}
-	xml_node 节点 = IDDoc.child("OME");
-	if (!(节点))
-	{
-		失败清理();
-		return 尝试结果{ .结果 = 结果分类::Tiff异常,.异常类型 = Tiff异常类型::OME规范,.错误消息 = "OME XML 缺少OME节点" };
-	}
-	if (!(唯一标识符 = 节点.attribute("UUID")))
-	{
-		失败清理();
-		return 尝试结果{ .结果 = 结果分类::Tiff异常,.异常类型 = Tiff异常类型::OME规范,.错误消息 = "OME节点缺少UUID属性" };
-	}
-	if(!(节点= 节点.child("Image")))
-	{
-		失败清理();
-		return 尝试结果{ .结果 = 结果分类::Tiff异常,.异常类型 = Tiff异常类型::OME规范,.错误消息 = "OME节点下缺少Image节点" };
-	}
-	if (!(文件名 = 节点.attribute("Name")))
-	{
-		失败清理();
-		return 尝试结果{ .结果 = 结果分类::Tiff异常,.异常类型 = Tiff异常类型::OME规范,.错误消息 = "Image节点缺少Name属性" };
-	}
-	if (!(Pixels = 节点.child("Pixels")))
-	{
-		失败清理();
-		return 尝试结果{ .结果 = 结果分类::Tiff异常,.异常类型 = Tiff异常类型::OME规范,.错误消息 = "Image节点下缺少Pixels节点" };
-	}
-	if (!(iSizeX = Pixels.attribute("SizeX")))
-	{
-		失败清理();
-		return 尝试结果{ .结果 = 结果分类::Tiff异常,.异常类型 = Tiff异常类型::OME规范,.错误消息 = "Pixels节点缺少SizeX属性" };
-	}
-	if (!(iSizeY = Pixels.attribute("SizeY")))
-	{
-		失败清理();
-		return 尝试结果{ .结果 = 结果分类::Tiff异常,.异常类型 = Tiff异常类型::OME规范,.错误消息 = "Pixels节点缺少SizeY属性" };
-	}
-	if (!(iSizeC = Pixels.attribute("SizeC")))
-	{
-		失败清理();
-		return 尝试结果{ .结果 = 结果分类::Tiff异常,.异常类型 = Tiff异常类型::OME规范,.错误消息 = "Pixels节点缺少SizeC属性" };
-	}
-	if (!(iSizeZ = Pixels.attribute("SizeZ")))
-	{
-		失败清理();
-		return 尝试结果{ .结果 = 结果分类::Tiff异常,.异常类型 = Tiff异常类型::OME规范,.错误消息 = "Pixels节点缺少SizeZ属性" };
-	}
-	if (!(iSizeT = Pixels.attribute("SizeT")))
-	{
-		失败清理();
-		return 尝试结果{ .结果 = 结果分类::Tiff异常,.异常类型 = Tiff异常类型::OME规范,.错误消息 = "Pixels节点缺少SizeT属性" };
-	}
-	if (!(iDimensionOrder = Pixels.attribute("DimensionOrder")))
-	{
-		失败清理();
-		return 尝试结果{ .结果 = 结果分类::Tiff异常,.异常类型 = Tiff异常类型::OME规范,.错误消息 = "Pixels节点缺少DimensionOrder属性" };
-	}
-	生成各维尺寸();
-	if (!(iPixelType = Pixels.attribute("Type")))
-	{
-		失败清理();
-		return 尝试结果{ .结果 = 结果分类::Tiff异常,.异常类型 = Tiff异常类型::OME规范,.错误消息 = "Pixels节点缺少Type属性" };
-	}
-	xml_object_range<xml_named_node_iterator> 通道节点迭代器 = Pixels.children("Channel");
-	std::vector<xml_node> ChannelBuffer;
-	ChannelBuffer.insert(ChannelBuffer.end(), 通道节点迭代器.begin(), 通道节点迭代器.end());
-	const UINT8 SizeC = OmeBigTiff5D::SizeC();
-	if (ChannelBuffer.size() != SizeC)
-	{
-		失败清理();
-		return 尝试结果{ .结果 = 结果分类::Tiff异常,.异常类型 = Tiff异常类型::OME规范,.错误消息 = "Pixels节点下Channel节点数目不等于SizeC" };
-	}
-	iChannels = (xml_node*)malloc(sizeof(xml_node) * SizeC);
-	copy(ChannelBuffer.cbegin(), ChannelBuffer.cend(), iChannels);
-	const UINT64 最小文件尺寸 = FirstTags[1].LONG8值 + UINT64(SizeX()) * SizeY() * SizeC * SizeZ() * SizeT() * SizeP();
 	if (文件尺寸.QuadPart< 最小文件尺寸)//可以尝试修复的错误
 	{
 		文件尺寸.QuadPart = 最小文件尺寸;

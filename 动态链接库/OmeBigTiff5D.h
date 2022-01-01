@@ -40,6 +40,7 @@ private:
 	void 已知IDDoc构造文件();
 	UINT32 i各维尺寸[5];
 	void 生成各维尺寸();
+	void 打开Core(LARGE_INTEGER& 文件尺寸, UINT64& 最小文件尺寸);
 public:
 	virtual ~OmeBigTiff5D()noexcept;
 	//ITiffReader实现
@@ -65,6 +66,7 @@ public:
 	void 读入像素5D(UINT16 XSize, UINT16 YSize, UINT16 Size2, UINT16 Size3, UINT16 Size4, UINT64* XRange, UINT64* YRange, UINT64* Range2, UINT64* Range3,UINT64* Range4, BYTE* BytesOut)noexcept override;
 	BYTE* 内部像素指针5D(UINT16 X, UINT16 Y, UINT16 P2, UINT16 P3, UINT16 P4)noexcept override;
 	//IOmeBigTiff5D实现
+	尝试结果 只读打开(LPCWSTR 文件路径)noexcept override;
 	尝试结果 打开现存(LPCWSTR 文件路径) noexcept override;
 	//返回是否实施了打开而非创建
 	尝试结果 打开或创建(LPCWSTR 文件路径, UINT16 SizeX, UINT16 SizeY, UINT8 SizeC, UINT8 SizeZ, UINT16 SizeT, 维度顺序 DimensionOrder, 像素类型 PixelType, const 颜色* ChannelColors,bool& 打开而非创建) noexcept override;
