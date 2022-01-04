@@ -1,10 +1,11 @@
-本库可以高速读写OME-TIFF文件。仅支持Windows操作系统。
+本库可以高速读写OME-TIFF文件。要求支持环境为 Windows 11 操作系统和AVX2指令集
 
 内含以下库：
 - [Eigen](http://eigen.tuxfamily.org/dox/index.html)
 - [pugixml](https://pugixml.org/)
 
-依赖外部库：Intel OneAPI Math Kernel Library
+如从源代码编译，还需要以下库：
+- Intel OneAPI Math Kernel Library
 # OME-TIFF相关背景
 ## TIFF与BigTiff
 TIFF（Tag Image File Format，标签图像文件格式）是一种广泛使用的多图像存档文件格式，可以存储多张2D图像，每个像素也可以是1、2或4字节（称位深度或SizeP），它们线性排列在被称为IFD的维度（称I维度）上，每个IFD类似于视频的一“帧”，除了像素数值以外还包含高度（Y维度）、宽度（X维度）等元数据信息，每一项元数据被称为一个标签。TIFF规范规定了每个IFD都必须包含的，所谓必需标签，以及一些可选包含的标签。
@@ -79,3 +80,13 @@ OmeBigTiff5D是作者在OME BigTiff基础上进一步严格格式规范：
 不同于其基类，该类的创建使用无参数的`创建OmeBigTiff5D`，然后调用`打开现存`、`打开或创建`或`覆盖创建`，以载入或创建磁盘上的文件。创建类的方法需要提供基本参数，包括各维尺寸、维度顺序、像素类型、通道颜色；也可以提供图像描述文本，自动解析基本参数。
 ## 使用MATLAB工具箱
 工具箱文档见MATLAB工具箱\doc\GettingStarted.mlx。
+# 编译源代码
+Visual Studio 解决方案包含4种配置：
+- MATLAB Debug，调试版本生成到MATLAB工具箱中，用于MATLAB环境下调试MEX
+- MATLAB Release，发布为MATLAB工具箱的配置
+- 单元测试 Debug，用于单元测试的调试版本
+- 单元测试 Release，用于单元测试的发布版本
+
+Debug配置均具有便于调试而未经优化的编译设置，Release则是不便调试而优化的编译。MATLAB和单元测试配置仅输出位置不同。具体请检查每个项目的不同配置，确保那些路径设置有效。
+
+生成时，不要生成整个解决方案。首先选择正确的配置方案，然后调试MATLAB工具箱时只需生成MexInterface项目，动态链接库依赖会自动跟随。进行单元测试时也只需生成单元测试项目。

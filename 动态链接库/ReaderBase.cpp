@@ -14,7 +14,7 @@ void ReaderBase::加载文件(HANDLE 文件句柄)
 	FileMappingObject = CreateFileMappingW(文件句柄, NULL, PAGE_READONLY, 0, 0, NULL);
 	if (FileMappingObject == INVALID_HANDLE_VALUE)
 		throw 尝试结果{ .结果 = 结果分类::Win32异常,.错误代码 = GetLastError(),.错误消息 = "建立文件映射失败" };
-	基地址 = (char*)MapViewOfFile(FileMappingObject, FILE_MAP_READ, 0, 0, 0);
+	基地址 = (BYTE*)MapViewOfFile(FileMappingObject, FILE_MAP_READ, 0, 0, 0);
 	if (!基地址)
 		throw 尝试结果{ .结果 = 结果分类::Win32异常,.错误代码 = GetLastError(),.错误消息 = "文件映射视图出错" };
 }

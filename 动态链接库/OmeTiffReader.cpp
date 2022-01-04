@@ -18,9 +18,9 @@ void OmeTiffReader::加载文件(HANDLE 文件句柄)
 	LARGE_INTEGER 文件大小{ .QuadPart = 0 };
 	SetFilePointerEx(文件句柄, 文件大小, &文件大小, FILE_END);
 	ReaderBase::加载文件(文件句柄);
-	const char* 尾指针 = 基地址 + 文件大小.QuadPart;
+	末地址 = 基地址 + 文件大小.QuadPart;
 	xml_document IDDoc;
-	载入图像描述(IDDoc, 尾指针);
+	载入图像描述(IDDoc);
 	xml_node 节点 = IDDoc.child("OME");
 	if (!节点)
 		throw 尝试结果{ .结果 = 结果分类::Tiff异常,.异常类型 = Tiff异常类型::OME规范,.错误消息 = "OME XML 缺少OME节点" };
@@ -156,13 +156,14 @@ void OmeTiffReader::读入像素3D(UINT16 XSize, UINT16 YSize, UINT32 ISize, UIN
 {
 	Read3DBase(XSize, YSize, ISize, XRange, YRange, IRange, BytesOut);
 }
-void OmeTiffReader::读入像素5D(UINT16 XSize, UINT16 YSize, UINT16 Size2, UINT16 Size3, UINT16 Size4, UINT64* XRange,  UINT64* YRange, UINT64* Range2,UINT64* Range3, UINT64* Range4, BYTE* BytesOut) noexcept
+尝试结果 OmeTiffReader::读入像素5D(UINT16 XSize, UINT16 YSize, UINT16 Size2, UINT16 Size3, UINT16 Size4, UINT64* XRange,  UINT64* YRange, UINT64* Range2,UINT64* Range3, UINT64* Range4, BYTE* BytesOut) noexcept
 {
 	UINT32 下标长度[3] = { Size2,Size3,Size4 };
 	UINT64* 下标[3] = { Range2,Range3,Range4 };
 	偏移向量 IFD索引;
 	下标转索引(1, 3, i各维尺寸+2, 下标长度, 下标, IFD索引);
 	Read3DBase(XSize, YSize, IFD索引.size(), XRange, YRange, IFD索引.data(), BytesOut);
+	return 尝试结果{ .结果 = 结果分类::成功 };
 }
 UINT32 OmeTiffReader::缓存全部()
 {

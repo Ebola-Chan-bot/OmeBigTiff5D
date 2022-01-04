@@ -93,9 +93,6 @@
     <ClInclude Include="ResolutionUnit.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="N维切片.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="OmeBigTiffReader.h">
       <Filter>头文件</Filter>
     </ClInclude>
@@ -174,6 +171,18 @@
     <ClInclude Include="..\include\维度顺序字符串.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="SampleFormat.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="像素类型采样格式.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="IFD5D.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="BigTiff文件头Base.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -203,9 +212,6 @@
     <ClCompile Include="XML文本接收器.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="N维切片.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="SmallTiff文件头.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
@@ -233,9 +239,6 @@
     <ClCompile Include="是否间断.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="BigTiff文件头.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="pugixml.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
@@ -257,9 +260,13 @@
     <ClCompile Include="OmeTiffReader.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="IFD5D.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="cpp.hint" />
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <Xml Include="头文件依赖树.xml">

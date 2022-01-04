@@ -1,9 +1,9 @@
 #include "pch.h"
 #include "IFD.h"
 template <NumberType Word, NumberType DWord>
-IFD指针<Word, DWord> IFD偏移<Word, DWord>::取指针(const char* 基地址)const
+IFD指针<Word, DWord> IFD偏移<Word, DWord>::取指针(const BYTE* 基地址)const
 {
-	return IFD指针<Word, DWord>{.指针 = (char*)(基地址 + 偏移)};
+	return IFD指针<Word, DWord>{.指针 = (BYTE*)(基地址 + 偏移)};
 }
 template <NumberType Word, NumberType DWord>
 DWord IFD偏移<Word, DWord>::operator+(DWord 增量)const
@@ -15,15 +15,15 @@ IFD偏移<Word, DWord>::IFD偏移(DWord 偏移):偏移(偏移){}
 template <NumberType Word, NumberType DWord>
 IFD偏移<Word, DWord>::IFD偏移() {}
 template <NumberType Word, NumberType DWord>
-IFD偏移<Word, DWord>& IFD偏移<Word, DWord>::operator=(const DWord& 偏移)
+IFD偏移<Word, DWord>& IFD偏移<Word, DWord>::operator=(DWord 偏移)
 {
 	IFD偏移::偏移 = 偏移;
 	return *this;
 }
 template <NumberType Word, NumberType DWord>
-IFD偏移<Word, DWord>& IFD偏移<Word, DWord>::operator+=(const DWord& 增量)
+IFD偏移<Word, DWord>& IFD偏移<Word, DWord>::operator+=(DWord 增量)
 {
-	IFD偏移::偏移 += 增量;
+	偏移 += 增量;
 	return *this;
 }
 template <NumberType Word, NumberType DWord>
@@ -48,7 +48,7 @@ IFD偏移<Word, DWord>& IFD指针<Word, DWord>::NextIFD()const
 	return *(IFD偏移<Word, DWord>*)(指针 + sizeof(Word) + sizeof(Tag<DWord>) * NumberOfTags());
 }
 template <NumberType Word, NumberType DWord>
-IFD偏移<Word, DWord> IFD指针<Word, DWord>::取偏移(const char* 基地址)const
+IFD偏移<Word, DWord> IFD指针<Word, DWord>::取偏移(const BYTE* 基地址)const
 {
 	return IFD偏移<Word, DWord>(指针 - 基地址);
 }

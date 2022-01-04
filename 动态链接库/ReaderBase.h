@@ -5,7 +5,8 @@
 class ReaderBase :public I使用内存映射文件
 {
 protected:
-	const char* 基地址;
+	const BYTE* 基地址;
+	const BYTE* 末地址;
 	virtual ~ReaderBase()noexcept;
 	UINT16 iSizeX;
 	UINT16 iSizeY;

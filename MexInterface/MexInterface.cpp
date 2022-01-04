@@ -111,33 +111,34 @@ template <typename T>
 TypedArray<T> 读入像素5D(IOmeTiffReader* 对象指针, UINT16 SizeX, UINT16 SizeY, UINT16 Size2,UINT16 Size3,UINT16 Size4, UINT64* RangeX, UINT64* RangeY, UINT64* Range2,UINT64* Range3,UINT64* Range4)
 {
 	buffer_ptr_t<T> 缓冲区 = 数组工厂.createBuffer<T>(UINT64(SizeX) * SizeY * Size2 * Size3 * Size4);
-	对象指针->读入像素5D(位置5D, (BYTE*)缓冲区.get());
+	const 尝试结果 结果 = 对象指针->读入像素5D(位置5D, (BYTE*)缓冲区.get());
+	if (结果.结果 != 结果分类::成功)
+		throw 结果;
 	return 数组工厂.createArrayFromBuffer({ SizeX,SizeY,Size2,Size3,Size4 }, std::move(缓冲区));
+}
+StructArray 结构化结果(const 尝试结果& 结果)
+{
+	StructArray 异常结构 = 数组工厂.createStructArray({ 1,1 }, { "Type","Code","Message" });
+	//异常结构[0]不能单独拎出来做多次字段编辑
+	异常结构[0]["Type"] = 数组工厂.createScalar(UINT8(结果.结果));
+	switch (结果.结果)
+	{
+	case 结果分类::Tiff异常:
+		异常结构[0]["Code"] = 数组工厂.createScalar(UINT32(结果.异常类型));
+		break;
+	case 结果分类::Win32异常:
+		异常结构[0]["Code"] = 数组工厂.createScalar(UINT32(结果.错误代码));
+		break;
+	case 结果分类::XML异常:
+		异常结构[0]["Code"] = 数组工厂.createScalar(UINT32(结果.XML异常));
+		break;
+	}
+	异常结构[0]["Message"] = GetCharArray(结果.错误消息);
+	return 异常结构;
 }
 Array 处理结果(const 尝试结果& 结果, ITiffReader* 对象指针)
 {
-	if (结果.结果 == 结果分类::成功)
-		return 数组工厂.createScalar(size_t(对象指针));
-	else
-	{
-		StructArray 异常结构 = 数组工厂.createStructArray({ 1,1 }, { "Type","Code","Message" });
-		//异常结构[0]不能单独拎出来做多次字段编辑
-		异常结构[0]["Type"] = 数组工厂.createScalar(UINT8(结果.结果));
-		switch (结果.结果)
-		{
-		case 结果分类::Tiff异常:
-			异常结构[0]["Code"] = 数组工厂.createScalar(UINT32(结果.异常类型));
-			break;
-		case 结果分类::Win32异常:
-			异常结构[0]["Code"] = 数组工厂.createScalar(UINT32(结果.错误代码));
-			break;
-		case 结果分类::XML异常:
-			异常结构[0]["Code"] = 数组工厂.createScalar(UINT32(结果.XML异常));
-			break;
-		}
-		异常结构[0]["Message"] = GetCharArray(结果.错误消息);
-		return std::move(异常结构);
-	}
+	return 结果.结果 == 结果分类::成功 ? Array(数组工厂.createScalar(size_t(对象指针))) : Array(结构化结果(结果));
 };
 #define API声明(函数名) void 函数名(ArgumentList& outputs,ArgumentList& inputs)
 API声明(CreateTiffReader)
@@ -382,23 +383,30 @@ API声明(ReadPixels5D)
 		Size3 = 各维尺寸[3];
 	if (!Range4)
 		Size4 = 各维尺寸[4];
-	switch (对象指针->PixelType())
+	try
 	{
-	case 像素类型::DOUBLE:
-		outputs[0] = 读入像素5D<double>(对象指针, 位置5D);
-		break;
-	case 像素类型::FLOAT:
-		outputs[0] = 读入像素5D<float>(对象指针, 位置5D);
-		break;
+		switch (对象指针->PixelType())
+		{
+		case 像素类型::DOUBLE:
+			outputs[0] = 读入像素5D<double>(对象指针, 位置5D);
+			break;
+		case 像素类型::FLOAT:
+			outputs[0] = 读入像素5D<float>(对象指针, 位置5D);
+			break;
 #define 读入Type5D(Type) case 像素类型::Type:\
 			outputs[0] = 读入像素5D<Type>(对象指针, 位置5D);\
 			break;
-		读入Type5D(UINT8);
-		读入Type5D(UINT16);
-		读入Type5D(UINT32);
-		读入Type5D(INT8);
-		读入Type5D(INT16);
-		读入Type5D(INT32);
+			读入Type5D(UINT8);
+			读入Type5D(UINT16);
+			读入Type5D(UINT32);
+			读入Type5D(INT8);
+			读入Type5D(INT16);
+			读入Type5D(INT32);
+		}
+	}
+	catch (尝试结果 ex)
+	{
+		outputs[0] = 结构化结果(ex);
 	}
 	free(RangeX);
 	free(RangeY);

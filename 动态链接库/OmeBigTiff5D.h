@@ -9,9 +9,10 @@ class OmeBigTiff5D :public IOmeBigTiff5D, I使用内存映射文件
 private:
 	union
 	{
-		char* 基地址;
+		BYTE* 基地址;
 		OmeBigTiff5D文件头* 文件头;
 	};
+	BYTE* 末地址;
 	xml_document IDDoc;
 	xml_attribute 唯一标识符;
 	xml_attribute 文件名;
@@ -23,8 +24,8 @@ private:
 	xml_attribute iSizeT;
 	xml_attribute iDimensionOrder;
 	xml_attribute iPixelType;
-	xml_node* iChannels;
-	Tag<UINT64>* FirstTags;
+	xml_node* iChannels = nullptr;
+	IFD5D* FirstIFD;
 	//总是返回false
 	void 失败清理() noexcept;
 	void 更改文件尺寸(LARGE_INTEGER 新尺寸);
@@ -63,7 +64,7 @@ public:
 	//只读内部指针，调用方不应当修改其中的值
 	const char* ImageDescription()const noexcept override;
 	const char* FileName()const noexcept override;
-	void 读入像素5D(UINT16 XSize, UINT16 YSize, UINT16 Size2, UINT16 Size3, UINT16 Size4, UINT64* XRange, UINT64* YRange, UINT64* Range2, UINT64* Range3,UINT64* Range4, BYTE* BytesOut)noexcept override;
+	尝试结果 读入像素5D(UINT16 XSize, UINT16 YSize, UINT16 Size2, UINT16 Size3, UINT16 Size4, UINT64* XRange, UINT64* YRange, UINT64* Range2, UINT64* Range3,UINT64* Range4, BYTE* BytesOut)noexcept override;
 	BYTE* 内部像素指针5D(UINT16 X, UINT16 Y, UINT16 P2, UINT16 P3, UINT16 P4)noexcept override;
 	//IOmeBigTiff5D实现
 	尝试结果 只读打开(LPCWSTR 文件路径)noexcept override;

@@ -26,7 +26,7 @@ public:
 	如果要顺序读取某个维度的全部位置，可将该维度索引指针设为nullptr。此时对应的索引Size会被忽略，任何值均不影响结果。
 	调用方应当负责为BytesOut分配足够的内存，本函数只负责写入该内存。写入维度顺序与文件一致。
 	*/
-	virtual void 读入像素5D(UINT16 XSize, UINT16 YSize, UINT16 Size2, UINT16 Size3, UINT16 Size4,UINT64* XRange, UINT64* YRange, UINT64* Range2, UINT64* Range3, UINT64* Range4, BYTE* BytesOut)noexcept = 0;
+	virtual 尝试结果 读入像素5D(UINT16 XSize, UINT16 YSize, UINT16 Size2, UINT16 Size3, UINT16 Size4,UINT64* XRange, UINT64* YRange, UINT64* Range2, UINT64* Range3, UINT64* Range4, BYTE* BytesOut)noexcept = 0;
 	//直接返回指定位置像素存储位置的内部指针。2、3、4维度可能是CZT三个可变维度的任何排列，请查询DimensionOrder确认。该内存只读，尝试写入将发生意外结果。
 	virtual BYTE* 内部像素指针5D(UINT16 X, UINT16 Y, UINT16 P2, UINT16 P3, UINT16 P4)noexcept = 0;
 	virtual const UINT32* 各维尺寸()const noexcept = 0;

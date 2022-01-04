@@ -12,5 +12,6 @@ enum class TagID :UINT16
 	StripByteCounts = 279,
 	XResolution = 282,
 	YResolution = 283,
-	ResolutionUnit = 296
+	ResolutionUnit = 296,
+	SampleFormat = 339
 };

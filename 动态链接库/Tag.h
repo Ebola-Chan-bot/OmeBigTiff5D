@@ -4,7 +4,11 @@
 #include "文件偏移.h"
 #include "Rational.h"
 #include "SRational.h"
-#pragma pack(2)
+#include "SampleFormat.h"
+#include "Compression.h"
+#include "PhotometricInterpretation.h"
+#include "ResolutionUnit.h"
+#pragma pack(4)
 template <NumberType DWord>
 struct Tag
 {
@@ -28,6 +32,10 @@ struct Tag
 		UINT64 LONG8值;
 		INT64 SLONG8值;
 		UINT64 IFD8值;
+		SampleFormat SampleFormat枚举;
+		Compression Compression枚举;
+		PhotometricInterpretation PhotometricInterpretation枚举;
+		ResolutionUnit ResolutionUnit枚举;
 		文件偏移<DWord, UINT8> BYTE偏移;
 		文件偏移<DWord, char> ASCII偏移;
 		文件偏移<DWord, UINT16> SHORT偏移;

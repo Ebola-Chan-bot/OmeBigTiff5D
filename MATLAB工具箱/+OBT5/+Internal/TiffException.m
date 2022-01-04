@@ -5,5 +5,6 @@ classdef TiffException<uint32
 		OmeSpecification(2)
 		UnsupportedFormat(3)
 		FileTooLong(4)
+		SubscriptOutOfBounds(5)
 	end
 end

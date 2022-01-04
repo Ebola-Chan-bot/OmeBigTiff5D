@@ -15,7 +15,7 @@ private:
 protected:
 	std::string iImageDescription;
 	//此函数同时还会缓存首个IFD，因此必须在调用之前先分配好IFD像素指针的内存
-	virtual void 载入图像描述(pugi::xml_document& XML文档,const char* 尾指针) = 0;
+	virtual void 载入图像描述(pugi::xml_document& XML文档) = 0;
 	const BYTE** IFD像素指针;
 	UINT32 已缓存数 = 0;
 	UINT32 缓存全部() override;
@@ -51,7 +51,7 @@ public:
 	5D读取函数。给定要读取的目标位置，其每个维度的索引及尺寸。如果要顺序读取某个维度的全部位置，可将该维度索引指针设为nullptr。
 	调用方应当负责为BytesOut分配足够的内存，本函数只负责写入该内存。
 	*/
-	void 读入像素5D(UINT16 XSize, UINT16 YSize, UINT16 Size2, UINT16 Size3, UINT16 Size4,UINT64* XRange, UINT64* YRange, UINT64* Range2,  UINT64* Range3, UINT64* Range4, BYTE* BytesOut)noexcept override;
+	尝试结果 读入像素5D(UINT16 XSize, UINT16 YSize, UINT16 Size2, UINT16 Size3, UINT16 Size4,UINT64* XRange, UINT64* YRange, UINT64* Range2,  UINT64* Range3, UINT64* Range4, BYTE* BytesOut)noexcept override;
 	//直接返回指定位置像素存储位置的内部指针
 	BYTE* 内部像素指针5D(UINT16 X, UINT16 Y, UINT16 P2, UINT16 P3, UINT16 P4)noexcept override;
 	const UINT32* 各维尺寸()const noexcept override;

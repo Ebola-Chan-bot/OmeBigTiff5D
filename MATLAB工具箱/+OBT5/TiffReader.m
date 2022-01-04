@@ -51,7 +51,7 @@ classdef TiffReader<handle
 				MexInterface(uint8(API),obj.Pointer,Ranges{:},ToPointer);
 				Pixels=[];
 			else
-				Pixels=permute(MexInterface(uint8(API),obj.Pointer,Ranges{:}),[ReorderIndex setdiff(1:5,ReorderIndex)]);
+				Pixels=permute(CheckPos(MexInterface(uint8(API),obj.Pointer,Ranges{:})),[ReorderIndex setdiff(1:5,ReorderIndex)]);
 			end
 		end
 	end
