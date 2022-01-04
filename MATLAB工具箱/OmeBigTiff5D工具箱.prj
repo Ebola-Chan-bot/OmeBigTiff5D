@@ -1,5 +1,5 @@
 <deployment-project plugin="plugin.toolbox" plugin-version="1.0">
-  <configuration file="C:\Users\vhtmf\source\repos\OmeBigTiff5D\MATLAB工具箱\OmeBigTiff5D工具箱.prj" location="C:\Users\vhtmf\source\repos\OmeBigTiff5D\MATLAB工具箱" name="OmeBigTiff5D工具箱" target="target.toolbox" target-name="打包为工具箱">
+  <configuration file="C:\Users\vhtmf\Documents\MATLAB\OmeBigTiff5D\MATLAB工具箱\OmeBigTiff5D工具箱.prj" location="C:\Users\vhtmf\Documents\MATLAB\OmeBigTiff5D\MATLAB工具箱" name="OmeBigTiff5D工具箱" target="target.toolbox" target-name="打包为工具箱">
     <param.appname>OME Big TIFF 5D</param.appname>
     <param.authnamewatermark>埃博拉酱</param.authnamewatermark>
     <param.email>Leenrung@outlook.com</param.email>
@@ -103,19 +103,12 @@ OmeBigTiff5D：支持OmeBigTiff5D所有功能。读写符合5D规范的OME BigTi
     <fileset.depfun.excluded />
     <fileset.package />
     <build-deliverables>
-      <file location="${PROJECT_ROOT}" name="OME Big TIFF 5D.mltbx" optional="false">C:\Users\vhtmf\source\repos\OmeBigTiff5D\MATLAB工具箱\OME Big TIFF 5D.mltbx</file>
+      <file location="${PROJECT_ROOT}" name="OME Big TIFF 5D.mltbx" optional="false">C:\Users\vhtmf\Documents\MATLAB\OmeBigTiff5D\MATLAB工具箱\OME Big TIFF 5D.mltbx</file>
     </build-deliverables>
     <workflow />
     <matlab>
       <root>C:\Program Files\MATLAB\R2021b</root>
-      <toolboxes>
-        <toolbox name="neuralnetwork" />
-      </toolboxes>
-      <toolbox>
-        <neuralnetwork>
-          <enabled>true</enabled>
-        </neuralnetwork>
-      </toolbox>
+      <toolboxes />
     </matlab>
     <platform>
       <unix>false</unix>
