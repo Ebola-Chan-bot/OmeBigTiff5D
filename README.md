@@ -1,3 +1,4 @@
+# 本项目已停止维护，请改用最新的[Image5D](https://github.com/Silver-Fang/Image5D)库
 本库可以高速读写OME-TIFF文件。要求支持环境为 Windows 11 操作系统和AVX2指令集
 
 内含以下库：
